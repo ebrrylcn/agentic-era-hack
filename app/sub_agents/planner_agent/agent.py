@@ -1,4 +1,3 @@
-# tourgent/sub_agents/planner_agent/agent.py
 import datetime
 from zoneinfo import ZoneInfo
 import yaml
@@ -11,11 +10,11 @@ from google.adk.planners import PlanReActPlanner
 from .outputSchema import ItineraryResponse
 from .tools import validate_and_save_itinerary
 
-from tourgent.sub_agents.maps_agent.agent import (
+from app.sub_agents.maps_agent.agent import (
     text_search_agent, place_details_agent, nearby_search_agent
 )
-from tourgent.sub_agents.hotels_agent.agent import hotels_agent
-from tourgent.sub_agents.events_agent.agent import events_agent
+from app.sub_agents.hotels_agent.agent import hotels_agent
+from app.sub_agents.events_agent.agent import events_agent
 
 ensure_env_loaded()
 
