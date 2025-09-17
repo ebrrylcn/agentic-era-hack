@@ -6,17 +6,17 @@ from google.adk.planners import PlanReActPlanner
 
 from .outputSchema import ItineraryResponse
 
-from tourgent.sub_agents.maps_agent.agent import (
+from app.sub_agents.maps_agent.agent import (
     text_search_agent, place_details_agent, nearby_search_agent
 )
-from tourgent.sub_agents.hotels_agent.agent import hotels_agent
-from tourgent.sub_agents.events_agent.agent import events_agent
+from app.sub_agents.hotels_agent.agent import hotels_agent
+from app.sub_agents.events_agent.agent import events_agent
 
 import datetime
 
 ensure_env_loaded()
 
-with open('tourgent/sub_agents/planner_agent/index.yml', 'r') as f:
+with open('app/sub_agents/planner_agent/index.yml', 'r') as f:
     prompts = yaml.safe_load(f)
 
 planner_summary_agent = LlmAgent(
