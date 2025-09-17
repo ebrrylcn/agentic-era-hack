@@ -7,7 +7,7 @@ from .sub_agents.planner_agent.agent import planner_agent
 
 ensure_env_loaded()
 
-with open('apps/tourgent/index.yml', 'r') as f:
+with open('app/index.yml', 'r') as f:
     prompt_data = yaml.safe_load(f)
 
 root_agent = Agent(
