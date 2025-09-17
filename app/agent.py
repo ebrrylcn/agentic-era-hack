@@ -3,7 +3,7 @@ from env_utils import ensure_env_loaded
 import yaml
 
 from google.adk.agents import Agent
-from .sub_agents.planner_agent.agent import planner_agent
+from app.sub_agents.planner_agent.agent import root_planner_agent
 
 ensure_env_loaded()
 
@@ -14,6 +14,6 @@ root_agent = Agent(
     name="tourgent",
     model="gemini-2.5-flash",
     instruction=prompt_data['rootAgent']['systemPrompt'],
-    sub_agents=[planner_agent],
+    sub_agents=[root_planner_agent],
     description="Top-level agent that orchestrates travel planning based on user input"
 )
