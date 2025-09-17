@@ -5,7 +5,7 @@ from typing import Dict, Any, List, Optional, Tuple, Literal
 from datetime import datetime, timedelta
 
 from env_utils import ensure_env_loaded
-from tourgent.sub_agents.maps_agent.tools import (
+from app.sub_agents.maps_agent.tools import (
     google_places_text_search,
     google_places_nearby_search,
     google_places_place_details,

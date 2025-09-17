@@ -1,5 +1,55 @@
-# tourgent
 
+# tourgent: Modular Travel Planning Agent
+
+This repository now uses the `tourgent` agent as its main orchestrator for travel planning and itinerary generation. `tourgent` is a modular, multi-agent system built on Google's Agent Development Kit (ADK), featuring sub-agents for planning, hotels, events, and maps.
+
+## Key Features
+
+- **Modular agent architecture**: Each travel domain (planning, hotels, events, maps) is handled by a dedicated sub-agent.
+- **YAML-driven prompts**: Agent instructions and system prompts are managed via YAML files for easy customization.
+- **Pydantic schemas**: Input and output schemas are strictly validated for robust data handling.
+- **Easy integration**: The main agent is exposed as `tourgent.root_agent` and is now used throughout the application.
+
+## How to Use
+
+- The main agent is now imported from `tourgent.agent`:
+
+	```python
+	from tourgent.agent import root_agent
+	```
+
+- All agent orchestration, planning, and sub-agent logic is defined in the `tourgent/` directory.
+- YAML prompt files are included in the package and loaded at runtime.
+
+### Project Structure (Relevant to tourgent)
+
+```
+tourgent/
+		__init__.py
+		agent.py            # Main root agent definition
+		inputSchema.py      # Input schema for itinerary requests
+		sub_agents/
+				hotels_agent/
+				events_agent/
+				maps_agent/
+				planner_agent/
+		*.yml               # Prompt files for root and sub-agents
+```
+
+## Migration Notes
+
+- The previous `app/agent.py` logic is now replaced by the advanced `tourgent` agent.
+- All deployment and application logic now references `tourgent.root_agent`.
+
+## For Developers
+
+- To add or modify agent logic, edit the relevant files in `tourgent/`.
+- To update prompts, edit the YAML files in `tourgent/` and its sub-agents.
+- Ensure new dependencies are added to `pyproject.toml`.
+
+---
+
+# Original Template Info
 A base ReAct agent built with Google's Agent Development Kit (ADK)
 Agent generated with [`googleCloudPlatform/agent-starter-pack`](https://github.com/GoogleCloudPlatform/agent-starter-pack) version `0.15.0`
 
