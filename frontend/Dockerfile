@@ -14,7 +14,6 @@ RUN npm install
 COPY . .
 
 # Build the application
-RUN npm run build
 
 # Expose port
 EXPOSE 8002
