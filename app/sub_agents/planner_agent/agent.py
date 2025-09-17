@@ -37,10 +37,9 @@ summary_evaluator_agent = LlmAgent(
     description="Agent that evaluates and corrects the travel itinerary summary"
 )
 
-planner_loop_agent = LoopAgent(
+planner_loop_agent = LlmAgent(
     name="planner_loop_agent",
     sub_agents=[planner_summary_agent, summary_evaluator_agent],
-    max_iterations=3,
     description="Agent that iteratively refines the travel itinerary summary"
 )
 root_planner_agent = LlmAgent(
