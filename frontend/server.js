@@ -70,7 +70,7 @@ app.get('/api/adk/test', async (req, res) => {
 // Create ADK session
 app.post('/api/adk/create-session', async (req, res) => {
     const adkBaseUrl = req.headers['x-adk-base-url'] || 'http://localhost:8000';
-    const appName = req.headers['x-app-name'] || 'tourgent';
+    const appName = req.headers['x-app-name'] || 'app';
     const userId = req.headers['x-user-id'];
 
     if (!userId) {
@@ -112,7 +112,7 @@ app.post('/api/adk/create-session', async (req, res) => {
 // Check ADK session
 app.get('/api/adk/check-session', async (req, res) => {
     const adkBaseUrl = req.headers['x-adk-base-url'] || 'http://localhost:8000';
-    const appName = req.headers['x-app-name'] || 'tourgent';
+    const appName = req.headers['x-app-name'] || 'app';
     const userId = req.headers['x-user-id'];
     const sessionId = req.headers['x-session-id'];
 

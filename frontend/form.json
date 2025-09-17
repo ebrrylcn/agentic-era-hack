@@ -1,9 +1,9 @@
 {
-  "city": null,
-  "country": null,
+  "city": "",
+  "country": "",
   "date": {
-    "start_date": null,
-    "end_date": null,
+    "start_date": "",
+    "end_date": "",
     "number_of_days": null
   },
   "people": {

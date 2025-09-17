@@ -436,7 +436,7 @@ class ChatManager {
         }
         
         const payload = {
-            appName: "tourgent",
+            appName: "app",
             userId: userId,
             sessionId: sessionId,
             newMessage: {
@@ -530,7 +530,7 @@ class ChatManager {
             headers: {
                 'Content-Type': 'application/json',
                 'X-ADK-Base-Url': adkBaseUrl,
-                'X-App-Name': 'tourgent',
+                'X-App-Name': 'app',
                 'X-User-Id': userId
             },
             body: JSON.stringify({})
@@ -553,7 +553,7 @@ class ChatManager {
                 method: 'GET',
                 headers: {
                     'X-ADK-Base-Url': adkBaseUrl,
-                    'X-App-Name': 'tourgent',
+                    'X-App-Name': 'app',
                     'X-User-Id': userId,
                     'X-Session-Id': sessionId
                 }
