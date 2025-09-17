@@ -1,57 +1,88 @@
 
-# tourgent: Modular Travel Planning Agent
 
-This repository now uses the `tourgent` agent as its main orchestrator for travel planning and itinerary generation. `tourgent` is a modular, multi-agent system built on Google's Agent Development Kit (ADK), featuring sub-agents for planning, hotels, events, and maps.
+# Tourgent: Modular Travel & Planning Agent (ADK)
+
+This repository implements a modular, multi-agent system for travel planning and itinerary generation using Google's Agent Development Kit (ADK). The core logic is in the `app/` directory, with sub-agents for planning, hotels, events, and maps. The project is designed for extensibility, observability, and production deployment on Google Cloud.
+
+## Project Structure
+
+```
+app/
+	__init__.py
+	agent.py              # Main root agent definition (entry point)
+	agent_engine_app.py   # Agent Engine application logic for deployment
+	inputSchema.py        # Input schema for itinerary requests
+	index.yml             # Root agent prompt
+	sub_agents/
+		hotels_agent/
+		events_agent/
+		maps_agent/
+		planner_agent/
+	utils/
+		gcs.py
+		tracing.py
+		typing.py
+deployment/
+	README.md
+	terraform/           # Infrastructure as code for GCP
+notebooks/             # Jupyter notebooks for prototyping and evaluation
+tests/                 # Unit, integration, and load tests
+Makefile               # Common development commands
+pyproject.toml         # Project dependencies and configuration
+GEMINI.md              # ADK and agent development reference
+MANIFEST.in            # Package data (YAML prompt files)
+```
 
 ## Key Features
 
-- **Modular agent architecture**: Each travel domain (planning, hotels, events, maps) is handled by a dedicated sub-agent.
+- **Modular agent architecture**: Each travel domain (planning, hotels, events, maps) is handled by a dedicated sub-agent in `app/sub_agents/`.
 - **YAML-driven prompts**: Agent instructions and system prompts are managed via YAML files for easy customization.
 - **Pydantic schemas**: Input and output schemas are strictly validated for robust data handling.
-- **Easy integration**: The main agent is exposed as `tourgent.root_agent` and is now used throughout the application.
+- **Cloud-native deployment**: Terraform and Makefile scripts for GCP infrastructure and CI/CD.
+- **Observability**: OpenTelemetry tracing and logging, with custom GCS integration for large payloads.
 
 ## How to Use
 
-- The main agent is now imported from `tourgent.agent`:
+- The main agent is imported from `app.agent`:
 
 	```python
-	from tourgent.agent import root_agent
+	from app.agent import root_agent
 	```
 
-- All agent orchestration, planning, and sub-agent logic is defined in the `tourgent/` directory.
+- All orchestration, planning, and sub-agent logic is defined in `app/`.
 - YAML prompt files are included in the package and loaded at runtime.
+- For local testing, use the provided Makefile commands.
 
-### Project Structure (Relevant to tourgent)
+## Development & Testing
 
-```
-tourgent/
-		__init__.py
-		agent.py            # Main root agent definition
-		inputSchema.py      # Input schema for itinerary requests
-		sub_agents/
-				hotels_agent/
-				events_agent/
-				maps_agent/
-				planner_agent/
-		*.yml               # Prompt files for root and sub-agents
-```
+1. **Install dependencies:**
+	 ```bash
+	 make install
+	 ```
+2. **Test your agent:**
+	 - Programmatically: Write a script to import and call `root_agent` (see `GEMINI.md` for examples).
+	 - Manually: Run `make playground` for a local UI.
+3. **Run unit/integration tests:**
+	 ```bash
+	 make test
+	 ```
 
-## Migration Notes
+## Deployment
 
-- The previous `app/agent.py` logic is now replaced by the advanced `tourgent` agent.
-- All deployment and application logic now references `tourgent.root_agent`.
+- Use `make backend` to deploy the agent to Vertex AI Agent Engine.
+- Infrastructure is managed with Terraform in `deployment/terraform/`.
+- See `deployment/README.md` for details.
 
 ## For Developers
 
-- To add or modify agent logic, edit the relevant files in `tourgent/`.
-- To update prompts, edit the YAML files in `tourgent/` and its sub-agents.
-- Ensure new dependencies are added to `pyproject.toml`.
+- To add or modify agent logic, edit files in `app/` and its subdirectories.
+- To update prompts, edit the YAML files in `app/` and `app/sub_agents/`.
+- Add new dependencies to `pyproject.toml`.
+- For advanced ADK usage, see `GEMINI.md`.
 
 ---
 
-# Original Template Info
-A base ReAct agent built with Google's Agent Development Kit (ADK)
-Agent generated with [`googleCloudPlatform/agent-starter-pack`](https://github.com/GoogleCloudPlatform/agent-starter-pack) version `0.15.0`
+This project is based on the Google Cloud Agent Starter Pack and follows best practices for modular, production-ready GenAI agent development.
 
 ## Project Structure
 
