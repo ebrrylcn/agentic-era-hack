@@ -13,8 +13,6 @@ RUN npm install
 # Copy source code
 COPY . .
 
-# Build the application
-
 # Expose port
 EXPOSE 8002
 
