@@ -131,7 +131,8 @@ a:hover {
 /* Layout */
 .main-container {
     display: flex;
-    min-height: 100vh;
+    height: 100vh;              /* Constrain to viewport height */
+    overflow: hidden;           /* Prevent page scroll; children scroll */
     background-color: #F8F9FA;  /* Light grey background */
 }
 
