@@ -5,8 +5,6 @@ Agent generated with [`googleCloudPlatform/agent-starter-pack`](https://github.c
 
 ## Project Structure
 
-This project is organized as follows:
-
 ```
 tourgent/
 ├── app/                 # Core application code
