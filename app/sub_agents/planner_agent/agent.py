@@ -1,5 +1,4 @@
 import yaml
-from env_utils import ensure_env_loaded
 
 from google.adk.agents import LlmAgent, LoopAgent
 from google.adk.planners import PlanReActPlanner
@@ -14,7 +13,6 @@ from app.sub_agents.events_agent.agent import events_agent
 
 import datetime
 
-ensure_env_loaded()
 
 with open('app/sub_agents/planner_agent/index.yml', 'r') as f:
     prompts = yaml.safe_load(f)

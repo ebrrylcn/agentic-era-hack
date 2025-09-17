@@ -1,5 +1,5 @@
 import os
-from env_utils import ensure_env_loaded
+from .env_utils import ensure_env_loaded
 import yaml
 
 from google.adk.agents import Agent

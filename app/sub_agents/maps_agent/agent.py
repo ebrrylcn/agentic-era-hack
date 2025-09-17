@@ -4,10 +4,8 @@ from .tools import google_places_text_search, google_places_place_details, googl
 
 from .masks import place_details_field_masks, place_types, price_levels, ev_connector_types
 
-from env_utils import ensure_env_loaded
 import yaml
 
-ensure_env_loaded() 
 
 def format_system_prompt(prompt_template):
     return prompt_template.format(

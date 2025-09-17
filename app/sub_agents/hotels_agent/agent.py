@@ -7,7 +7,6 @@ from .tools import (
     hotels_analyze
 )
 
-from env_utils import ensure_env_loaded
 
 
 """
@@ -16,7 +15,6 @@ sys.path.insert(0, str(BASE_DIR))
 load_dotenv()
 """
 
-ensure_env_loaded()
 
 with open('app/sub_agents/hotels_agent/index.yml', 'r') as file:
     prompt_data = yaml.safe_load(file)

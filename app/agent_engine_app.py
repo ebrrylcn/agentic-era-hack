@@ -164,7 +164,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Deploy agent engine app to Vertex AI")
     parser.add_argument(
         "--project",
-        default=None,
+        default="qwiklabs-gcp-03-0d1459a04d94",
         help="GCP project ID (defaults to application default credentials)",
     )
     parser.add_argument(
@@ -179,7 +179,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--requirements-file",
-        default=".requirements.txt",
+        default="requirements.txt",
         help="Path to requirements.txt file",
     )
     parser.add_argument(
