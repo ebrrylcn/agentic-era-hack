@@ -1,22 +1,11 @@
-# Project name used for resource naming
-project_name = "tourgent"
-
-# Your Production Google Cloud project id
-prod_project_id = "your-production-project-id"
-
-# Your Staging / Test Google Cloud project id
-staging_project_id = "your-staging-project-id"
-
-# Your Google Cloud project ID that will be used to host the Cloud Build pipelines.
-cicd_runner_project_id = "your-cicd-project-id"
-# Name of the host connection you created in Cloud Build
-host_connection_name = "git-tourgent"
-github_pat_secret_id = "your-github_pat_secret_id"
-
-repository_owner = "Your GitHub organization or username."
-
-# Name of the repository you added to Cloud Build
-repository_name = "tourgent"
-
-# The Google Cloud region you will use to deploy the infrastructure
+staging_project_id = "qwiklabs-gcp-03-0d1459a04d94"
+prod_project_id = "qwiklabs-gcp-00-18421b519292"
+cicd_runner_project_id = "qwiklabs-gcp-00-18421b519292"
 region = "us-central1"
+repository_name = "agentic-era-hack"
+repository_owner = "ebrrylcn"
+host_connection_name = "git-agentic-era-hack"
+create_cb_connection = true
+create_repository = false
+github_app_installation_id = "86248007"
+github_pat_secret_id = "git-agentic-era-hack-github-oauthtoken-8ddf1e"
