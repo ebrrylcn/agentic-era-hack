@@ -1592,49 +1592,145 @@ class FormManager {
     }
 
     /**
-     * Generate travel plan using ADK agent
+     * Generate travel plan using ADK agent with validation and retry
      */
     async generatePlan() {
+        const maxRetries = 3;
+        let currentAttempt = 0;
+        
         try {
-            // Format prompt with form data
-            const promptMessage = this.formatPromptWithFormData();
-            
-            console.log('🎯 Sending to Tourgent Agent:');
-            console.log('📝 Prompt:', promptMessage);
-            
-            // Show the query in an alert box
-            alert(`🎯 Query being sent to Tourgent ADK Agent:\n\n${promptMessage}`);
-            
             // Show loading modal
             const loadingModal = this.showLoadingModal();
             
             // Send to ADK agent via ChatManager if available
-            if (window.chatManager) {
-                const response = await window.chatManager.sendToADKAgent(promptMessage);
-                
-                console.log('🤖 Tourgent Agent Response:');
-                console.log(response);
-                
-                // Hide loading modal
-                loadingModal.remove();
-                
-                // Display the response on the website
-                this.displayAgentResponse(response);
-                
-            } else {
+            if (!window.chatManager) {
                 console.error('❌ ChatManager not available');
                 loadingModal.remove();
                 Utils.showNotification('Chat system not initialized. Please refresh the page.', 'error');
+                return;
+            }
+
+            while (currentAttempt < maxRetries) {
+                currentAttempt++;
+                
+                try {
+                    // Update loading modal with current attempt
+                    this.updateLoadingModal(loadingModal, currentAttempt, maxRetries);
+                    
+                    // Format prompt with form data
+                    const promptMessage = this.formatPromptWithFormData(currentAttempt);
+                    
+                    console.log(`🎯 Sending to Tourgent Agent (Attempt ${currentAttempt}/${maxRetries}):`);
+                    console.log('📝 Prompt:', promptMessage);
+                    
+                    const response = await window.chatManager.sendToADKAgent(promptMessage);
+                    
+                    console.log(`🤖 Tourgent Agent Response (Attempt ${currentAttempt}):`);
+                    console.log(response);
+                    
+                    // Validate the response format
+                    const validationResult = this.validateAgentResponse(response);
+                    
+                    if (validationResult.valid) {
+                        console.log('✅ Response format is valid!');
+                        
+                        // Hide loading modal
+                        loadingModal.remove();
+                        
+                        // Save response to output.json
+                        await this.saveResponseToFile(response);
+                        
+                        // Display the response on the website
+                        this.displayAgentResponse(response);
+                        return;
+                        
+                    } else {
+                        console.warn(`⚠️ Response format invalid (Attempt ${currentAttempt}): ${validationResult.error}`);
+                        
+                        if (currentAttempt < maxRetries) {
+                            console.log(`🔄 Retrying... (${currentAttempt + 1}/${maxRetries})`);
+                            // Add a small delay between retries
+                            await new Promise(resolve => setTimeout(resolve, 1000));
+                        }
+                    }
+                    
+                } catch (attemptError) {
+                    console.error(`❌ Error in attempt ${currentAttempt}:`, attemptError);
+                    
+                    if (currentAttempt < maxRetries) {
+                        console.log(`🔄 Retrying due to error... (${currentAttempt + 1}/${maxRetries})`);
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                    }
+                }
             }
             
+            // All attempts failed
+            loadingModal.remove();
+            Utils.showNotification(
+                `Failed to get properly formatted response after ${maxRetries} attempts. Please try again.`, 
+                'error', 
+                8000
+            );
+            
         } catch (error) {
-            console.error('❌ Error generating travel plan:', error);
+            console.error('❌ Error in generatePlan:', error);
             // Hide loading modal if it exists
             const existingModal = document.querySelector('.loading-modal-overlay');
             if (existingModal) {
                 existingModal.remove();
             }
             Utils.showNotification('Failed to generate travel plan. Please try again.', 'error');
+        }
+    }
+
+    /**
+     * Update loading modal with retry information
+     */
+    updateLoadingModal(modal, currentAttempt, maxRetries) {
+        const loadingContent = modal.querySelector('.loading-content');
+        if (loadingContent) {
+            const attemptText = currentAttempt > 1 ? 
+                `<p class="retry-info">Attempt ${currentAttempt} of ${maxRetries}</p>` : '';
+            
+            loadingContent.innerHTML = `
+                <div class="loading-spinner"></div>
+                <h2>🎯 Your Route Is Being Generated...</h2>
+                <p>Tourgent is crafting your perfect travel plan</p>
+                ${attemptText}
+                <div class="loading-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            `;
+        }
+    }
+
+    /**
+     * Validate agent response and extract JSON
+     */
+    validateAgentResponse(response) {
+        try {
+            // Try to extract JSON from the response
+            let jsonData;
+            try {
+                // Try to extract JSON from the response if it contains other text
+                const jsonMatch = response.match(/\{[\s\S]*\}/);
+                if (jsonMatch) {
+                    jsonData = JSON.parse(jsonMatch[0]);
+                } else {
+                    // If no JSON found, try parsing the entire response
+                    jsonData = JSON.parse(response);
+                }
+            } catch (parseError) {
+                return { valid: false, error: `Invalid JSON: ${parseError.message}` };
+            }
+            
+            // Validate the structure
+            return this.validateResponseFormat(jsonData);
+            
+        } catch (error) {
+            return { valid: false, error: `Validation error: ${error.message}` };
         }
     }
 
@@ -1696,6 +1792,13 @@ class FormManager {
                     margin: 0 0 30px 0;
                     color: #666;
                     font-size: 1em;
+                }
+                .retry-info {
+                    margin: 10px 0;
+                    font-size: 14px;
+                    color: #ff9800;
+                    font-style: italic;
+                    font-weight: 500;
                 }
                 .loading-spinner {
                     width: 60px;
@@ -1927,10 +2030,183 @@ class FormManager {
     }
 
     /**
+     * Validate if the response matches the required JSON structure
+     */
+    validateResponseFormat(jsonData) {
+        try {
+            // Check if it's an object
+            if (!jsonData || typeof jsonData !== 'object') {
+                return { valid: false, error: 'Response is not a valid object' };
+            }
+
+            // Check required top-level keys
+            if (!jsonData.hotel_information || !jsonData.day_plans) {
+                return { valid: false, error: 'Missing required keys: hotel_information or day_plans' };
+            }
+
+            // Validate hotel_information structure
+            const hotel = jsonData.hotel_information;
+            const requiredHotelKeys = ['name', 'place_id', 'lat', 'lon', 'address', 'check_in', 'check_out', 'nights'];
+            for (const key of requiredHotelKeys) {
+                if (!(key in hotel)) {
+                    return { valid: false, error: `Missing hotel key: ${key}` };
+                }
+            }
+
+            // Validate day_plans structure
+            if (!Array.isArray(jsonData.day_plans)) {
+                return { valid: false, error: 'day_plans must be an array' };
+            }
+
+            if (jsonData.day_plans.length === 0) {
+                return { valid: false, error: 'day_plans array is empty' };
+            }
+
+            // Validate each day plan
+            for (let i = 0; i < jsonData.day_plans.length; i++) {
+                const day = jsonData.day_plans[i];
+                const requiredDayKeys = ['order', 'date', 'places', 'summary'];
+                for (const key of requiredDayKeys) {
+                    if (!(key in day)) {
+                        return { valid: false, error: `Day ${i + 1} missing key: ${key}` };
+                    }
+                }
+
+                // Validate places array
+                if (!Array.isArray(day.places)) {
+                    return { valid: false, error: `Day ${i + 1} places must be an array` };
+                }
+
+                // Validate each place
+                for (let j = 0; j < day.places.length; j++) {
+                    const place = day.places[j];
+                    const requiredPlaceKeys = ['order', 'place_id', 'lat', 'lon', 'name', 'place_type', 'travel', 'time'];
+                    for (const key of requiredPlaceKeys) {
+                        if (!(key in place)) {
+                            return { valid: false, error: `Day ${i + 1}, place ${j + 1} missing key: ${key}` };
+                        }
+                    }
+
+                    // Validate travel object
+                    if (!place.travel || typeof place.travel !== 'object') {
+                        return { valid: false, error: `Day ${i + 1}, place ${j + 1} travel must be an object` };
+                    }
+                    if (!('mode' in place.travel)) {
+                        return { valid: false, error: `Day ${i + 1}, place ${j + 1} travel missing mode` };
+                    }
+                }
+            }
+
+            return { valid: true };
+        } catch (error) {
+            return { valid: false, error: `Validation error: ${error.message}` };
+        }
+    }
+
+    /**
+     * Save agent response to output.json file
+     */
+    async saveResponseToFile(response) {
+        try {
+            console.log('💾 Saving response to output.json...');
+            
+            // Parse the response if it's a JSON string
+            let jsonData;
+            try {
+                // Try to extract JSON from the response if it contains other text
+                const jsonMatch = response.match(/\{[\s\S]*\}/);
+                if (jsonMatch) {
+                    jsonData = JSON.parse(jsonMatch[0]);
+                } else {
+                    // If no JSON found, try parsing the entire response
+                    jsonData = JSON.parse(response);
+                }
+            } catch (parseError) {
+                console.warn('⚠️ Response is not valid JSON, saving as text:', parseError);
+                jsonData = { raw_response: response, timestamp: new Date().toISOString() };
+            }
+            
+            const saveResponse = await fetch('/api/save-output', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(jsonData)
+            });
+            
+            if (saveResponse.ok) {
+                console.log('✅ Response saved to output.json successfully');
+                Utils.showNotification('Travel plan saved successfully!', 'success');
+            } else {
+                throw new Error(`Failed to save: ${saveResponse.status}`);
+            }
+            
+        } catch (error) {
+            console.error('❌ Error saving response to file:', error);
+            Utils.showNotification('Warning: Could not save travel plan to file', 'warning');
+            // Don't throw error to avoid breaking the flow
+        }
+    }
+
+    /**
      * Format prompt with form data for ADK agent
      */
-    formatPromptWithFormData() {
-        const basePrompt = "Here, I share you my trip preferences, I want you to create me a tour according to the information below and DO NOT ASK ANY OTHER QUESTIONS. Just provide me with my trip.";
+    formatPromptWithFormData(attemptNumber = 1) {
+        const retryText = attemptNumber > 1 ? 
+            `\n\nIMPORTANT: This is attempt ${attemptNumber}. The previous response did not match the required format. Please ensure your response follows the EXACT structure specified below.` : '';
+        
+        const basePrompt = `Here, I share you my trip preferences, I want you to create me a tour according to the information below and DO NOT ASK ANY OTHER QUESTIONS. Just provide me with my trip. Be sure to call every sub-agent possible about getting information. Gather everything as best as you can, then ONLY RETURN ME THE JSON THAT IS GENERATED AFTER plan_summary_agent IS CALLED. DO NOT SAY ANYTHING ELSE. MAKE SURE THE JSON IS VALID.
+
+CRITICAL: Your response MUST be a valid JSON object with this EXACT structure:
+
+{
+  "hotel_information": {
+    "name": "string",
+    "place_id": "string", 
+    "lat": number,
+    "lon": number,
+    "address": "string",
+    "check_in": "YYYY-MM-DD",
+    "check_out": "YYYY-MM-DD", 
+    "nights": number,
+    "price_per_night": number|null,
+    "total_price": number|null,
+    "booking_link": "string"|null
+  },
+  "day_plans": [
+    {
+      "order": number,
+      "date": "YYYY-MM-DD",
+      "places": [
+        {
+          "order": number,
+          "place_id": "string",
+          "lat": number,
+          "lon": number,
+          "name": "string",
+          "place_type": "string",
+          "travel": {
+            "mode": "string",
+            "to_go": "string"|null
+          },
+          "time": "string"
+        }
+      ],
+      "summary": "string"
+    }
+  ]
+}
+
+REQUIREMENTS:
+- Response must be ONLY the JSON object, no other text
+- All required keys must be present
+- Numbers must be actual numbers, not strings
+- Dates must be in YYYY-MM-DD format
+- Each day must have at least one place
+- Each place must have all required keys
+- Travel object must have "mode" key${retryText}
+
+Here is my trip information:`;
         
         // Clean and format form data for better readability
         const formattedData = JSON.stringify(this.formData, null, 2);

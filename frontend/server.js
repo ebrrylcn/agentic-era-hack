@@ -251,6 +251,28 @@ app.get('/.env', (req, res) => {
     }
 });
 
+// Save output data endpoint
+app.post('/api/save-output', async (req, res) => {
+    try {
+        const fs = await import('fs').then(m => m.promises);
+        
+        const outputPath = path.resolve(__dirname, 'output.json');
+        const data = JSON.stringify(req.body, null, 2);
+        
+        await fs.writeFile(outputPath, data, 'utf8');
+        
+        console.log('💾 Successfully saved data to output.json');
+        res.json({ success: true, message: 'Data saved successfully' });
+        
+    } catch (error) {
+        console.error('❌ Error saving to output.json:', error);
+        res.status(500).json({ 
+            error: 'Failed to save data',
+            details: error.message
+        });
+    }
+});
+
 // Serve index.html for root path
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));

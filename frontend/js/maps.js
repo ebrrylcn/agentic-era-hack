@@ -27,6 +27,7 @@ class MapManager {
         console.log('✅ Route data loaded');
 
         this.setupEventListeners();
+        this.setupPageVisibilityListener();
         this.initializeMDCComponents();
 
         // Wait for both configuration and Google Maps API to load
@@ -515,6 +516,36 @@ class MapManager {
                 stylers: [{ visibility: 'off' }]
             }
         ];
+    }
+
+    /**
+     * Setup page visibility listener to refresh data when page becomes visible
+     */
+    setupPageVisibilityListener() {
+        document.addEventListener('visibilitychange', async () => {
+            if (!document.hidden) {
+                console.log('🔄 Page became visible, refreshing route data...');
+                try {
+                    await this.loadRouteData();
+                    if (this.map && this.routeData && this.routeData.days && this.routeData.days.length > 0) {
+                        // Refresh current day view
+                        const currentDay = this.getCurrentDay();
+                        this.loadDay(currentDay);
+                        Utils.showNotification('Route data refreshed!', 'success', 2000);
+                    }
+                } catch (error) {
+                    console.error('Error refreshing route data:', error);
+                }
+            }
+        });
+    }
+
+    /**
+     * Get current day number (1-based)
+     */
+    getCurrentDay() {
+        const activeButton = document.querySelector('.day-btn.active');
+        return activeButton ? parseInt(activeButton.textContent.replace('Day ', '')) : 1;
     }
 
     /**
