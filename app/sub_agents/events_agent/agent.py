@@ -6,7 +6,7 @@ import yaml
 
 load_dotenv()
 
-with open('app/tourgent/sub_agents/events_agent/index.yml', 'r') as file:
+with open('app/sub_agents/events_agent/index.yml', 'r') as file:
     prompt_data = yaml.safe_load(file)
 
 def stop_search(tool_context: ToolContext):
