@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Tour Guidance App</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Material Components Web -->
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 20px;
+            background-color: #f8f9fa;
+        }
+        .debug-section {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .debug-title {
+            color: #1a73e8;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        .debug-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f1f3f4;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .status-ok { color: #137333; }
+        .status-error { color: #d93025; }
+        .test-button {
+            background: #1a73e8;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        .test-button:hover {
+            background: #1557b7;
+        }
+        #output {
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            min-height: 200px;
+            white-space: pre-wrap;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Tour Guidance App - Debug Console</h1>
+
+    <div class="debug-section">
+        <h2 class="debug-title">Environment Check</h2>
+        <div class="debug-item" id="environment-check">Checking environment...</div>
+    </div>
+
+    <div class="debug-section">
+        <h2 class="debug-title">Button Tests</h2>
+        <button class="test-button" onclick="testButtons()">Test All Buttons</button>
+        <button class="test-button" onclick="testEventListeners()">Test Event Listeners</button>
+        <button class="test-button" onclick="testMDCComponents()">Test MDC Components</button>
+        <button class="test-button" onclick="clearOutput()">Clear Output</button>
+    </div>
+
+    <div class="debug-section">
+        <h2 class="debug-title">Live Console Output</h2>
+        <div id="output"></div>
+    </div>
+
+    <div class="debug-section">
+        <h2 class="debug-title">Quick Actions</h2>
+        <button class="test-button" onclick="window.location.href='index.html'">Go to Form Page</button>
+        <button class="test-button" onclick="window.location.href='routes.html'">Go to Routes Page</button>
+        <button class="test-button" onclick="testFormLoad()">Test Form Load</button>
+    </div>
+
+    <script>
+        // Capture console output
+        const output = document.getElementById('output');
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+
+        function addToOutput(message, type = 'log') {
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? '#f00' : type === 'warn' ? '#ff0' : '#0f0';
+            output.innerHTML += `<span style="color: ${color}">[${timestamp}] ${message}</span>\n`;
+            output.scrollTop = output.scrollHeight;
+        }
+
+        console.log = function(...args) {
+            originalLog(...args);
+            addToOutput(args.join(' '), 'log');
+        };
+
+        console.error = function(...args) {
+            originalError(...args);
+            addToOutput('ERROR: ' + args.join(' '), 'error');
+        };
+
+        console.warn = function(...args) {
+            originalWarn(...args);
+            addToOutput('WARN: ' + args.join(' '), 'warn');
+        };
+
+        // Environment check
+        function checkEnvironment() {
+            const checks = {
+                'localStorage': typeof Storage !== 'undefined',
+                'fetch': typeof fetch !== 'undefined',
+                'Promise': typeof Promise !== 'undefined',
+                'addEventListener': 'addEventListener' in window,
+                'querySelector': 'querySelector' in document,
+                'classList': 'classList' in document.createElement('div')
+            };
+
+            let html = '';
+            for (const [feature, supported] of Object.entries(checks)) {
+                const status = supported ? 'status-ok' : 'status-error';
+                const icon = supported ? '✅' : '❌';
+                html += `<div class="${status}">${icon} ${feature}: ${supported}</div>`;
+            }
+
+            document.getElementById('environment-check').innerHTML = html;
+        }
+
+        function testButtons() {
+            console.log('🔘 Testing button functionality...');
+
+            // Check if we're on the debug page vs the main form page
+            const currentPage = window.location.pathname.split('/').pop();
+            console.log(`📍 Current page: ${currentPage}`);
+            
+            if (currentPage === 'debug.html') {
+                console.log('⚠️ Debug page detected. The required buttons are on index.html');
+                console.log('💡 To test buttons, please:');
+                console.log('   1. Open index.html');
+                console.log('   2. Open browser console (F12)');
+                console.log('   3. Run the button tests from there');
+                return;
+            }
+
+            // Test if we can find buttons
+            const buttons = [
+                'nextBtn', 'prevBtn', 'submitBtn',
+                'chatToggleBtn', 'chatCloseBtn', 'chatSendBtn'
+            ];
+
+            buttons.forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    console.log(`✅ Found button: ${id}`);
+                    console.log(`   - Type: ${btn.tagName}`);
+                    console.log(`   - Classes: ${btn.className}`);
+                    console.log(`   - Disabled: ${btn.disabled}`);
+                } else {
+                    console.log(`❌ Missing button: ${id}`);
+                }
+            });
+        }
+
+        function testEventListeners() {
+            console.log('🎯 Testing event listeners...');
+
+            // Try to trigger a test event
+            const testBtn = document.createElement('button');
+            testBtn.id = 'test-button';
+            testBtn.textContent = 'Test Button';
+            document.body.appendChild(testBtn);
+
+            let eventFired = false;
+            testBtn.addEventListener('click', () => {
+                eventFired = true;
+                console.log('✅ Event listener working correctly');
+            });
+
+            testBtn.click();
+
+            if (!eventFired) {
+                console.log('❌ Event listener not working');
+            }
+
+            document.body.removeChild(testBtn);
+        }
+
+        function testMDCComponents() {
+            console.log('🎨 Testing Material Design Components...');
+
+            if (typeof mdc !== 'undefined') {
+                console.log('✅ MDC library loaded');
+                console.log('   - Available components:', Object.keys(mdc));
+                
+                // Test creating a simple MDC component
+                try {
+                    const testContainer = document.createElement('div');
+                    testContainer.innerHTML = `
+                        <div class="mdc-text-field mdc-text-field--outlined" style="margin: 10px;">
+                            <input type="text" id="test-input" class="mdc-text-field__input">
+                            <div class="mdc-notched-outline">
+                                <div class="mdc-notched-outline__leading"></div>
+                                <div class="mdc-notched-outline__notch">
+                                    <label for="test-input" class="mdc-floating-label">Test Field</label>
+                                </div>
+                                <div class="mdc-notched-outline__trailing"></div>
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(testContainer);
+                    
+                    const textField = new mdc.textField.MDCTextField(testContainer.querySelector('.mdc-text-field'));
+                    console.log('✅ MDC TextField created successfully');
+                    
+                    // Clean up
+                    setTimeout(() => {
+                        if (document.body.contains(testContainer)) {
+                            document.body.removeChild(testContainer);
+                            console.log('🧹 Test MDC component cleaned up');
+                        }
+                    }, 5000);
+                    
+                } catch (error) {
+                    console.log('❌ Error creating MDC component:', error.message);
+                }
+            } else {
+                console.log('❌ MDC library not loaded');
+            }
+        }
+
+        function testFormLoad() {
+            console.log('📝 Testing form load...');
+
+            // Create a minimal test form
+            const testForm = document.createElement('div');
+            testForm.innerHTML = `
+                <button id="test-next-btn" class="mdc-button mdc-button--raised">
+                    <span class="mdc-button__label">Next</span>
+                </button>
+            `;
+            document.body.appendChild(testForm);
+
+            const testNextBtn = document.getElementById('test-next-btn');
+            testNextBtn.addEventListener('click', () => {
+                console.log('✅ Test form button clicked successfully');
+            });
+
+            console.log('✅ Test form created and event listener added');
+
+            // Clean up after 5 seconds
+            setTimeout(() => {
+                document.body.removeChild(testForm);
+                console.log('🧹 Test form cleaned up');
+            }, 5000);
+        }
+
+        function clearOutput() {
+            output.innerHTML = '';
+        }
+
+        // Initialize
+        checkEnvironment();
+        console.log('🚀 Debug console initialized');
+        console.log('📍 Current URL:', window.location.href);
+        console.log('🖥️ User Agent:', navigator.userAgent);
+    </script>
+
+    <!-- Material Components Web JavaScript -->
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+</body>
+</html>

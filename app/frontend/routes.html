@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turgent - Your Route & Places</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Material Components Web -->
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/material.css">
+    <link rel="stylesheet" href="css/chat.css">
+    <link rel="stylesheet" href="css/maps.css">
+</head>
+<body>
+    <!-- Main Content -->
+    <main class="routes-container" style="margin-bottom: 0; padding-bottom: 0;">
+        <!-- Daily Itinerary Sidebar -->
+        <aside class="itinerary-sidebar" id="summarySection">
+            <div class="summary-header">
+                <button class="return-btn" id="returnToFormBtn" title="Return to Form">
+                    <span class="material-icons">arrow_back</span>
+                    <span>Back</span>
+                </button>
+                <h2>Daily Itinerary</h2>
+                <div class="summary-controls">
+                    <button class="mdc-icon-button" id="expandSummaryBtn" title="Expand">
+                        <span class="material-icons">expand_less</span>
+                    </button>
+                    <button class="mdc-icon-button" id="exportItineraryBtn" title="Export">
+                        <span class="material-icons">download</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="summary-content" id="summaryContent">
+                <!-- Day Navigation -->
+                <div class="day-navigation">
+                    <div class="day-selector">
+                        <div class="mdc-chip-set mdc-chip-set--choice" id="dayChips">
+                            <!-- Day chips will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    <div class="day-nav-buttons">
+                        <button class="mdc-button mdc-button--outlined day-nav-btn" id="prevDayBtn">
+                            <span class="mdc-button__ripple"></span>
+                            <span class="material-icons mdc-button__icon">chevron_left</span>
+                            <span class="mdc-button__label">Previous</span>
+                        </button>
+                        <button class="mdc-button mdc-button--outlined day-nav-btn" id="nextDayBtn">
+                            <span class="mdc-button__ripple"></span>
+                            <span class="mdc-button__label">Next</span>
+                            <span class="material-icons mdc-button__icon">chevron_right</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Daily Schedule -->
+                <div class="daily-schedule" id="dailySchedule">
+                    <!-- Schedule items will be populated by JavaScript -->
+                </div>
+
+                <!-- Route Statistics -->
+                <div class="route-stats" id="routeStats">
+                    <div class="stat-item">
+                        <span class="material-icons">directions_walk</span>
+                        <div class="stat-content">
+                            <span class="stat-value" id="walkingDistance">-</span>
+                            <span class="stat-label">Walking</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="material-icons">schedule</span>
+                        <div class="stat-content">
+                            <span class="stat-value" id="totalTime">-</span>
+                            <span class="stat-label">Duration</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="material-icons">attach_money</span>
+                        <div class="stat-content">
+                            <span class="stat-value" id="estimatedCost">-</span>
+                            <span class="stat-label">Est. Cost</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="material-icons">wb_sunny</span>
+                        <div class="stat-content">
+                            <span class="stat-value" id="weatherInfo">-</span>
+                            <span class="stat-label">Weather</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Content Area -->
+        <section class="content-area" id="contentArea">
+            <!-- Map Section -->
+            <div class="map-section" id="mapSection">
+                <div class="map-container">
+                    <div id="map" class="map-display"></div>
+
+                    <!-- Map Controls -->
+                    <div class="map-controls">
+                        <div class="map-controls-top">
+                            <button class="mdc-icon-button map-control-btn" id="mapTypeBtn" title="Map Type">
+                                <span class="material-icons">layers</span>
+                            </button>
+                            <button class="mdc-icon-button map-control-btn" id="trafficBtn" title="Traffic">
+                                <span class="material-icons">traffic</span>
+                            </button>
+                            <button class="mdc-icon-button map-control-btn" id="fullscreenBtn" title="Fullscreen">
+                                <span class="material-icons">fullscreen</span>
+                            </button>
+                        </div>
+
+                        <div class="map-controls-bottom">
+                            <button class="mdc-icon-button map-control-btn" id="zoomInBtn" title="Zoom In">
+                                <span class="material-icons">add</span>
+                            </button>
+                            <button class="mdc-icon-button map-control-btn" id="zoomOutBtn" title="Zoom Out">
+                                <span class="material-icons">remove</span>
+                            </button>
+                            <button class="mdc-icon-button map-control-btn" id="myLocationBtn" title="My Location">
+                                <span class="material-icons">my_location</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Map Legend -->
+                    <div class="map-legend" id="mapLegend">
+                        <div class="legend-item">
+                            <div class="legend-marker restaurant"></div>
+                            <span>Restaurants</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-marker attraction"></div>
+                            <span>Attractions</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-marker hotel"></div>
+                            <span>Hotels</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-marker transport"></div>
+                            <span>Transport</span>
+                        </div>
+                    </div>
+
+                    <!-- Loading Overlay -->
+                    <div class="map-loading" id="mapLoading">
+                        <div class="loading-spinner">
+                            <div class="mdc-circular-progress mdc-circular-progress--indeterminate">
+                                <div class="mdc-circular-progress__determinate-container">
+                                    <svg class="mdc-circular-progress__determinate-circle-graphic" viewBox="0 0 48 48">
+                                        <circle class="mdc-circular-progress__determinate-track" cx="24" cy="24" r="18" stroke-width="4"/>
+                                        <circle class="mdc-circular-progress__determinate-circle" cx="24" cy="24" r="18" stroke-dasharray="113.097" stroke-dashoffset="113.097" stroke-width="4"/>
+                                    </svg>
+                                </div>
+                                <div class="mdc-circular-progress__indeterminate-container">
+                                    <div class="mdc-circular-progress__spinner-layer">
+                                        <div class="mdc-circular-progress__circle-clipper mdc-circular-progress__circle-left">
+                                            <svg class="mdc-circular-progress__indeterminate-circle-graphic" viewBox="0 0 48 48">
+                                                <circle cx="24" cy="24" r="18" stroke-dasharray="113.097" stroke-dashoffset="56.549" stroke-width="4"/>
+                                            </svg>
+                                        </div>
+                                        <div class="mdc-circular-progress__gap-patch">
+                                            <svg class="mdc-circular-progress__indeterminate-circle-graphic" viewBox="0 0 48 48">
+                                                <circle cx="24" cy="24" r="18" stroke-dasharray="113.097" stroke-dashoffset="56.549" stroke-width="3.2"/>
+                                            </svg>
+                                        </div>
+                                        <div class="mdc-circular-progress__circle-clipper mdc-circular-progress__circle-right">
+                                            <svg class="mdc-circular-progress__indeterminate-circle-graphic" viewBox="0 0 48 48">
+                                                <circle cx="24" cy="24" r="18" stroke-dasharray="113.097" stroke-dashoffset="56.549" stroke-width="4"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <p>Loading your personalized route...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chat Panel -->
+        <section class="chat-section" id="chatSection">
+            <button class="chat-toggle-btn" id="chatToggleBtn">
+                <span class="material-icons">message</span>
+            </button>
+
+            <div class="chat-panel" id="chatPanel">
+                <div class="chat-header">
+                    <h3>Route Assistant</h3>
+                    <div class="chat-actions">
+                        <button class="mdc-icon-button" id="chatOptionsBtn">
+                            <span class="material-icons">more_vert</span>
+                        </button>
+                        <button class="mdc-icon-button" id="chatCloseBtn">
+                            <span class="material-icons">close</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="chat-content">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="bot-message">
+                            <div class="message-bubble">
+                                <p>Great! I've created your personalized route. You can click on any location for more details, or ask me about alternatives!</p>
+                            </div>
+                            <span class="message-time">Now</span>
+                        </div>
+                    </div>
+
+                    <div class="quick-suggestions" id="quickSuggestions">
+                        <div class="mdc-chip" tabindex="0">
+                            <div class="mdc-chip__ripple"></div>
+                            <span class="mdc-chip__text">Add nearby restaurant</span>
+                        </div>
+                        <div class="mdc-chip" tabindex="0">
+                            <div class="mdc-chip__ripple"></div>
+                            <span class="mdc-chip__text">Optimize route</span>
+                        </div>
+                        <div class="mdc-chip" tabindex="0">
+                            <div class="mdc-chip__ripple"></div>
+                            <span class="mdc-chip__text">Check opening hours</span>
+                        </div>
+                        <div class="mdc-chip" tabindex="0">
+                            <div class="mdc-chip__ripple"></div>
+                            <span class="mdc-chip__text">Weather forecast</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-input">
+                    <div class="mdc-text-field mdc-text-field--outlined chat-input-field">
+                        <input type="text" id="chatInput" class="mdc-text-field__input" placeholder="Ask about your route...">
+                        <div class="mdc-notched-outline">
+                            <div class="mdc-notched-outline__leading"></div>
+                            <div class="mdc-notched-outline__notch"></div>
+                            <div class="mdc-notched-outline__trailing"></div>
+                        </div>
+                    </div>
+                    <button class="mdc-icon-button chat-send-btn" id="chatSendBtn">
+                        <span class="material-icons">send</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="chat-resize-handle" id="chatResizeHandle"></div>
+        </section>
+    </main>
+
+    <!-- Place Details Modal -->
+    <div class="mdc-dialog" id="placeDetailsDialog">
+        <div class="mdc-dialog__container">
+            <div class="mdc-dialog__surface">
+                <div class="mdc-dialog__header">
+                    <h2 class="mdc-dialog__title" id="placeDetailsTitle">Place Details</h2>
+                    <button class="mdc-icon-button mdc-dialog__close" data-mdc-dialog-action="close">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+                <div class="mdc-dialog__content" id="placeDetailsContent">
+                    <!-- Place details will be populated by JavaScript -->
+                </div>
+                <div class="mdc-dialog__actions">
+                    <button type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="directions">
+                        <div class="mdc-button__ripple"></div>
+                        <span class="mdc-button__label">Get Directions</span>
+                    </button>
+                    <button type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="remove">
+                        <div class="mdc-button__ripple"></div>
+                        <span class="mdc-button__label">Remove from Route</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="mdc-dialog__scrim"></div>
+    </div>
+
+    <!-- Map Type Menu -->
+    <div class="mdc-menu mdc-menu-surface" id="mapTypeMenu">
+        <ul class="mdc-list" role="menu" aria-hidden="true">
+            <li class="mdc-list-item" role="menuitem" data-map-type="roadmap">
+                <span class="mdc-list-item__ripple"></span>
+                <span class="mdc-list-item__text">Roadmap</span>
+            </li>
+            <li class="mdc-list-item" role="menuitem" data-map-type="satellite">
+                <span class="mdc-list-item__ripple"></span>
+                <span class="mdc-list-item__text">Satellite</span>
+            </li>
+            <li class="mdc-list-item" role="menuitem" data-map-type="hybrid">
+                <span class="mdc-list-item__ripple"></span>
+                <span class="mdc-list-item__text">Hybrid</span>
+            </li>
+            <li class="mdc-list-item" role="menuitem" data-map-type="terrain">
+                <span class="mdc-list-item__ripple"></span>
+                <span class="mdc-list-item__text">Terrain</span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Configuration Loader -->
+    <script src="js/config.js"></script>
+
+    <!-- Google Maps API -->
+    <script>
+        // Initialize map when both config and Google Maps are loaded
+        window.initMap = function() {
+            console.log('Google Maps API loaded');
+            if (window.mapManager) {
+                window.mapManager.initializeMap();
+            }
+        };
+
+        // Load Google Maps with API key from config
+        async function loadGoogleMaps() {
+            try {
+                // Wait for config to load
+                await window.appConfig.waitForLoad();
+
+                const apiKey = window.appConfig.getGoogleMapsApiKey();
+
+                if (!apiKey || apiKey === 'YOUR_API_KEY_HERE') {
+                    console.error('Google Maps API key not found in configuration');
+                    document.getElementById('mapLoading').innerHTML = `
+                        <div class="loading-spinner">
+                            <p style="color: #EA4335;">Google Maps API key not configured</p>
+                            <p style="font-size: 12px; color: #5F6368;">Please check your .env file</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                console.log('Loading Google Maps with API key from .env file');
+
+                // Create and load Google Maps script
+                const script = document.createElement('script');
+                script.async = true;
+                script.defer = true;
+                script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap&libraries=places`;
+                script.onerror = () => {
+                    console.error('Failed to load Google Maps API');
+                    document.getElementById('mapLoading').innerHTML = `
+                        <div class="loading-spinner">
+                            <p style="color: #EA4335;">Failed to load Google Maps</p>
+                            <p style="font-size: 12px; color: #5F6368;">Please check your API key and internet connection</p>
+                        </div>
+                    `;
+                };
+
+                document.head.appendChild(script);
+
+            } catch (error) {
+                console.error('Error loading Google Maps:', error);
+                document.getElementById('mapLoading').innerHTML = `
+                    <div class="loading-spinner">
+                        <p style="color: #EA4335;">Configuration error</p>
+                        <p style="font-size: 12px; color: #5F6368;">Unable to load .env configuration</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Start loading Google Maps when page loads
+        document.addEventListener('DOMContentLoaded', loadGoogleMaps);
+    </script>
+
+    <!-- Material Components Web -->
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+
+    <!-- Custom Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/maps.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

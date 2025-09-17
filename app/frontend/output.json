@@ -1,0 +1,346 @@
+{
+  "hotel_information": {
+    "name": "Hotel Casa Tra Noi Rome",
+    "place_id": 123456789,
+    "lat": 41.8941585,
+    "lon": 12.4524876,
+    "address": "Via di Monte del Gallo, 113, 00165 Roma RM, Italy",
+    "check_in": "02.10.2024",
+    "check_out": "05.10.2024",
+    "nights": 3,
+    "price_per_night": null,
+    "total_price": null,
+    "booking_link": "https://www.hotelcasatranoiroma.com/"
+  },
+  "day_plans": [
+    {
+      "order": 1,
+      "date": "02.10.2024",
+      "places": [
+        {
+          "order": 1,
+          "place_id": 123456789,
+          "lat": 41.8941585,
+          "lon": 12.4524876,
+          "name": "Hotel Casa Tra Noi Rome (Breakfast)",
+          "address": "Via di Monte del Gallo, 113, 00165 Roma RM, Italy",
+          "place_type": "hotel",
+          "travel": {
+            "mode": null,
+            "to_go": null
+          },
+          "time": "08:30"
+        },
+        {
+          "order": 2,
+          "place_id": 10001,
+          "lat": 41.8902,
+          "lon": 12.4922,
+          "name": "Colosseum",
+          "address": "Piazza del Colosseo, 1, 00184 Roma RM, Italy",
+          "place_type": "attraction",
+          "travel": {
+            "mode": "transit",
+            "to_go": "Take bus or metro to Colosseum"
+          },
+          "time": "10:00"
+        },
+        {
+          "order": 3,
+          "place_id": 10002,
+          "lat": 41.8923,
+          "lon": 12.4853,
+          "name": "Roman Forum",
+          "address": "Via della Salara Vecchia, 5/6, 00186 Roma RM, Italy",
+          "place_type": "attraction",
+          "travel": {
+            "mode": "walk",
+            "to_go": "Walk 5 minutes from Colosseum"
+          },
+          "time": "12:00"
+        },
+        {
+          "order": 4,
+          "place_id": 10003,
+          "lat": 41.8897,
+          "lon": 12.4862,
+          "name": "Palatine Hill",
+          "address": "Via di S. Gregorio, 30, 00186 Roma RM, Italy",
+          "place_type": "attraction",
+          "travel": {
+            "mode": "walk",
+            "to_go": "Walk 3 minutes from Roman Forum"
+          },
+          "time": "13:30"
+        },
+        {
+          "order": 5,
+          "place_id": 10004,
+          "lat": 41.8895,
+          "lon": 12.49,
+          "name": "Ristorante Luzzi (Lunch)",
+          "address": "Via di S. Giovanni in Laterano, 88, 00184 Roma RM, Italy",
+          "place_type": "restaurant",
+          "travel": {
+            "mode": "walk",
+            "to_go": "Walk 5 minutes from Palatine Hill"
+          },
+          "time": "14:30"
+        },
+        {
+          "order": 6,
+          "place_id": 10005,
+          "lat": 41.8905,
+          "lon": 12.491,
+          "name": "Coming Out (Coffee/Dessert)",
+          "address": "Piazza del Colosseo, 1, 00184 Roma RM, Italy",
+          "place_type": "cafe",
+          "travel": {
+            "mode": "walk",
+            "to_go": "Walk 2 minutes from restaurant"
+          },
+          "time": "16:00"
+        },
+        {
+          "order": 7,
+          "place_id": 10006,
+          "lat": 41.897,
+          "lon": 12.47,
+          "name": "Hostaria Romana (Dinner)",
+          "address": "Via della Stelletta, 24, 00186 Roma RM, Italy",
+          "place_type": "restaurant",
+          "travel": {
+            "mode": "transit",
+            "to_go": "Take metro/bus to city center"
+          },
+          "time": "20:00"
+        }
+      ],
+      "summary": "Arrival in Rome and check-in. Explore the ancient wonders of the Colosseum, Roman Forum, and Palatine Hill. Enjoy authentic Roman cuisine for lunch and dinner."
+    },
+    {
+      "order": 2,
+      "date": "03.10.2024",
+      "places": [
+        {
+          "order": 1,
+          "place_id": 123456789,
+          "lat": 41.8941585,
+          "lon": 12.4524876,
+          "name": "Hotel Casa Tra Noi Rome (Breakfast)",
+          "address": "Via di Monte del Gallo, 113, 00165 Roma RM, Italy",
+          "place_type": "hotel",
+          "travel": {
+            "mode": null,
+            "to_go": null
+          },
+          "time": "08:00"
+        },
+        {
+          "order": 2,
+          "place_id": 20001,
+          "lat": 41.9022,
+          "lon": 12.4539,
+          "name": "St. Peter's Basilica",
+          "address": "Piazza San Pietro, 00120 Città del Vaticano, Vatican City",
+          "place_type": "attraction",
+          "travel": {
+            "mode": "walk",
+            "to_go": "Walk from hotel (approx. 15-20 min)"
+          },
+          "time": "09:30"
+        },
+        {
+          "order": 3,
+          "place_id": 20002,
+          "lat": 41.9064,
+          "lon": 12.4537,
+          "name": "Vatican Museums and Sistine Chapel",
+          "address": "00120 Vatican City",
+          "place_type": "attraction",
+          "travel": {
+            "mode": "walk",
+            "to_go": "Walk 10 minutes from St. Peter's Basilica"
+          },
+          "time": "11:00"
+        },
+        {
+          "order": 4,
+          "place_id": 20004,
+          "lat": 41.905,
+          "lon": 12.45,
+          "name": "Borgo Pio (Lunch)",
+          "address": "Borgo Pio, 00193 Roma RM, Italy",
+          "place_type": "restaurant",
+          "travel": {
+            "mode": "walk",
+            "to_go": "Walk 5 minutes from Vatican Museums"
+          },
+          "time": "14:00"
+        },
+        {
+          "order": 5,
+          "place_id": 20003,
+          "lat": 41.9036,
+          "lon": 12.4667,
+          "name": "Castel Sant'Angelo",
+          "address": "Lungotevere Castello, 50, 00193 Roma RM, Italy",
+          "place_type": "attraction",
+          "travel": {
+            "mode": "walk",
+            "to_go": "Walk 15 minutes from Borgo Pio"
+          },
+          "time": "15:30"
+        },
+        {
+          "order": 6,
+          "place_id": 20005,
+          "lat": 41.904,
+          "lon": 12.46,
+          "name": "Gelateria Old Bridge (Coffee/Dessert)",
+          "address": "Viale dei Bastioni di Michelangelo, 7, 00192 Roma RM, Italy",
+          "place_type": "cafe",
+          "travel": {
+            "mode": "walk",
+            "to_go": "Walk 5 minutes from Castel Sant'Angelo"
+          },
+          "time": "17:30"
+        },
+        {
+          "order": 7,
+          "place_id": 20006,
+          "lat": 41.897,
+          "lon": 12.47,
+          "name": "Armando al Pantheon (Dinner)",
+          "address": "Salita de' Crescenzi, 31, 00186 Roma RM, Italy",
+          "place_type": "restaurant",
+          "travel": {
+            "mode": "transit",
+            "to_go": "Take bus or walk to Pantheon area"
+          },
+          "time": "20:00"
+        }
+      ],
+      "summary": "A full day dedicated to Vatican City, exploring St. Peter's Basilica, the Vatican Museums, and the Sistine Chapel. Conclude the day with a visit to Castel Sant'Angelo and a delightful dinner."
+    },
+    {
+      "order": 3,
+      "date": "04.10.2024",
+      "places": [
+        {
+          "order": 1,
+          "place_id": 123456789,
+          "lat": 41.8941585,
+          "lon": 12.4524876,
+          "name": "Hotel Casa Tra Noi Rome (Breakfast)",
+          "address": "Via di Monte del Gallo, 113, 00165 Roma RM, Italy",
+          "place_type": "hotel",
+          "travel": {
+            "mode": null,
+            "to_go": null
+          },
+          "time": "08:30"
+        },
+        {
+          "order": 2,
+          "place_id": 30001,
+          "lat": 41.9009,
+          "lon": 12.4833,
+          "name": "Trevi Fountain",
+          "address": "Piazza di Trevi, 00187 Roma RM, Italy",
+          "place_type": "attraction",
+          "travel": {
+            "mode": "transit",
+            "to_go": "Take bus or metro to Trevi Fountain"
+          },
+          "time": "10:00"
+        },
+        {
+          "order": 3,
+          "place_id": 30002,
+          "lat": 41.9056,
+          "lon": 12.4827,
+          "name": "Spanish Steps",
+          "address": "Piazza di Spagna, 00187 Roma RM, Italy",
+          "place_type": "attraction",
+          "travel": {
+            "mode": "walk",
+            "to_go": "Walk 10 minutes from Trevi Fountain"
+          },
+          "time": "11:30"
+        },
+        {
+          "order": 4,
+          "place_id": 30003,
+          "lat": 41.898,
+          "lon": 12.475,
+          "name": "Trattoria Pizzeria Da Enzo al 29 (Lunch)",
+          "address": "Via dei Vascellari, 29, 00153 Roma RM, Italy",
+          "place_type": "restaurant",
+          "travel": {
+            "mode": "walk",
+            "to_go": "Walk 15 minutes to Trastevere for lunch"
+          },
+          "time": "13:00"
+        },
+        {
+          "order": 5,
+          "place_id": 30004,
+          "lat": 41.8986,
+          "lon": 12.4768,
+          "name": "Pantheon",
+          "address": "Piazza della Rotonda, 00186 Roma RM, Italy",
+          "place_type": "attraction",
+          "travel": {
+            "mode": "walk",
+            "to_go": "Walk 10 minutes from Trastevere"
+          },
+          "time": "15:00"
+        },
+        {
+          "order": 6,
+          "place_id": 30005,
+          "lat": 41.8992,
+          "lon": 12.4731,
+          "name": "Piazza Navona",
+          "address": "Piazza Navona, 00186 Roma RM, Italy",
+          "place_type": "attraction",
+          "travel": {
+            "mode": "walk",
+            "to_go": "Walk 5 minutes from Pantheon"
+          },
+          "time": "16:30"
+        },
+        {
+          "order": 7,
+          "place_id": 30006,
+          "lat": 41.8985,
+          "lon": 12.4755,
+          "name": "Sant'Eustachio Il Caffè (Coffee/Dessert)",
+          "address": "Piazza di Sant'Eustachio, 82, 00186 Roma RM, Italy",
+          "place_type": "cafe",
+          "travel": {
+            "mode": "walk",
+            "to_go": "Walk 2 minutes from Piazza Navona"
+          },
+          "time": "17:30"
+        },
+        {
+          "order": 8,
+          "place_id": 30007,
+          "lat": 41.89,
+          "lon": 12.49,
+          "name": "Da Michele (Dinner)",
+          "address": "Via S. Giovanni in Laterano, 108, 00184 Roma RM, Italy",
+          "place_type": "restaurant",
+          "travel": {
+            "mode": "transit",
+            "to_go": "Take bus or walk towards Colosseum area"
+          },
+          "time": "20:00"
+        }
+      ],
+      "summary": "Discover iconic Roman landmarks like the Trevi Fountain and Spanish Steps. Explore the Pantheon and enjoy the lively atmosphere of Piazza Navona. Conclude with a final Roman dinner."
+    }
+  ]
+}

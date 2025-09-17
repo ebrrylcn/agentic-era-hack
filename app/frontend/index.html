@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turgent - Plan Your Journey</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Material Components Web -->
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/material.css">
+    <link rel="stylesheet" href="css/form.css">
+    <link rel="stylesheet" href="css/chat.css">
+</head>
+<body>
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Form Section -->
+        <section class="form-section" id="formSection">
+            <!-- Small Logo in upper left -->
+            <div class="logo-header">
+                <img src="tourgent_logo.png" alt="Turgent Logo" class="turgent-logo-small">
+            </div>
+            <div class="form-container">
+                <!-- Progress Indicator -->
+                <div class="progress-container">
+                    <div class="mdc-linear-progress" role="progressbar" aria-label="Example Progress Bar" aria-valuemin="0" aria-valuemax="1" aria-valuenow="0">
+                        <div class="mdc-linear-progress__buffer">
+                            <div class="mdc-linear-progress__buffer-bar"></div>
+                            <div class="mdc-linear-progress__buffer-dots"></div>
+                        </div>
+                        <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+                            <span class="mdc-linear-progress__bar-inner"></span>
+                        </div>
+                        <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+                            <span class="mdc-linear-progress__bar-inner"></span>
+                        </div>
+                    </div>
+                    <div class="step-indicators">
+                        <div class="step-indicator" data-step="1">
+                            <span class="material-icons">location_on</span>
+                            <span class="step-label">Destination</span>
+                        </div>
+                        <div class="step-indicator" data-step="2">
+                            <span class="material-icons">event</span>
+                            <span class="step-label">Dates</span>
+                        </div>
+                        <div class="step-indicator" data-step="3">
+                            <span class="material-icons">people</span>
+                            <span class="step-label">People</span>
+                        </div>
+                        <div class="step-indicator" data-step="4">
+                            <span class="material-icons">favorite</span>
+                            <span class="step-label">Preferences</span>
+                        </div>
+                        <div class="step-indicator" data-step="5">
+                            <span class="material-icons">block</span>
+                            <span class="step-label">Dislikes</span>
+                        </div>
+                        <div class="step-indicator" data-step="6">
+                            <span class="material-icons">hotel</span>
+                            <span class="step-label">Hotel</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Steps -->
+                <form id="tourPlanningForm" class="planning-form">
+                    <!-- Step 1: Destination -->
+                    <div class="form-step active" data-step="1">
+                        <h2 class="step-title">Where would you like to go?</h2>
+
+                        <div class="autocomplete-container">
+                            <div class="mdc-text-field mdc-text-field--outlined city-field">
+                                <input type="text" id="city" class="mdc-text-field__input" required autocomplete="off">
+                                <div class="mdc-notched-outline">
+                                    <div class="mdc-notched-outline__leading"></div>
+                                    <div class="mdc-notched-outline__notch">
+                                        <label for="city" class="mdc-floating-label">City *</label>
+                                    </div>
+                                    <div class="mdc-notched-outline__trailing"></div>
+                                </div>
+                            </div>
+                            <div class="city-suggestions" id="citySuggestions"></div>
+                        </div>
+
+                        <div class="mdc-text-field mdc-text-field--outlined country-field">
+                            <input type="text" id="country" class="mdc-text-field__input" required>
+                            <div class="mdc-notched-outline">
+                                <div class="mdc-notched-outline__leading"></div>
+                                <div class="mdc-notched-outline__notch">
+                                    <label for="country" class="mdc-floating-label">Country *</label>
+                                </div>
+                                <div class="mdc-notched-outline__trailing"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Dates -->
+                    <div class="form-step" data-step="2">
+                        <h2 class="step-title">When are you traveling?</h2>
+
+                        <div class="date-inputs">
+                            <div class="date-input-wrapper">
+                                <label for="start_date" class="date-label">Start Date</label>
+                                <input type="date" id="start_date" class="date-picker-input">
+                            </div>
+
+                            <div class="date-option-toggle">
+                                <div class="mdc-form-field">
+                                    <div class="mdc-radio">
+                                        <input class="mdc-radio__native-control" type="radio" id="end-date-radio" name="date-option" value="end-date">
+                                        <div class="mdc-radio__background">
+                                            <div class="mdc-radio__outer-circle"></div>
+                                            <div class="mdc-radio__inner-circle"></div>
+                                        </div>
+                                    </div>
+                                    <label for="end-date-radio">End Date</label>
+                                </div>
+
+                                <div class="mdc-form-field">
+                                    <div class="mdc-radio">
+                                        <input class="mdc-radio__native-control" type="radio" id="duration-radio" name="date-option" value="duration">
+                                        <div class="mdc-radio__background">
+                                            <div class="mdc-radio__outer-circle"></div>
+                                            <div class="mdc-radio__inner-circle"></div>
+                                        </div>
+                                    </div>
+                                    <label for="duration-radio">Number of Days</label>
+                                </div>
+                            </div>
+
+                            <div class="date-input-wrapper" id="end-date-field">
+                                <label for="end_date" class="date-label">End Date</label>
+                                <input type="date" id="end_date" class="date-picker-input">
+                            </div>
+
+                            <div class="mdc-text-field mdc-text-field--outlined" id="duration-field" style="display: none;">
+                                <input type="number" id="number_of_days" class="mdc-text-field__input" min="1">
+                                <div class="mdc-notched-outline">
+                                    <div class="mdc-notched-outline__leading"></div>
+                                    <div class="mdc-notched-outline__notch">
+                                        <label for="number_of_days" class="mdc-floating-label">Number of Days</label>
+                                    </div>
+                                    <div class="mdc-notched-outline__trailing"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: People -->
+                    <div class="form-step" data-step="3">
+                        <h2 class="step-title">Who's traveling?</h2>
+
+                        <div class="mdc-text-field mdc-text-field--outlined">
+                            <input type="number" id="number_of_people" class="mdc-text-field__input" min="1">
+                            <div class="mdc-notched-outline">
+                                <div class="mdc-notched-outline__leading"></div>
+                                <div class="mdc-notched-outline__notch">
+                                    <label for="number_of_people" class="mdc-floating-label">Number of People</label>
+                                </div>
+                                <div class="mdc-notched-outline__trailing"></div>
+                            </div>
+                        </div>
+
+                        <div class="mdc-text-field mdc-text-field--outlined mdc-text-field--textarea">
+                            <span class="mdc-text-field__ripple"></span>
+                            <span class="mdc-text-field__resizer">
+                                <textarea class="mdc-text-field__input" id="people_details" rows="3" cols="40" placeholder="Ages, mobility needs, special requirements..."></textarea>
+                            </span>
+                            <div class="mdc-notched-outline">
+                                <div class="mdc-notched-outline__leading"></div>
+                                <div class="mdc-notched-outline__notch">
+                                    <label for="people_details" class="mdc-floating-label">People Details (optional)</label>
+                                </div>
+                                <div class="mdc-notched-outline__trailing"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Preferences -->
+                    <div class="form-step" data-step="4">
+                        <h2 class="step-title">What do you enjoy?</h2>
+
+                        <div class="preference-section">
+                            <h3>Events & Activities</h3>
+                            <div class="chips-container" id="events-chips">
+                                <div class="mdc-chip-set mdc-chip-set--filter" role="grid">
+                                    <div class="mdc-chip mdc-chip--filter" role="row">
+                                        <div class="mdc-chip__ripple"></div>
+                                        <span class="mdc-chip__checkmark">
+                                            <svg class="mdc-chip__checkmark-svg" viewBox="-2 -3 30 30">
+                                                <path class="mdc-chip__checkmark-path" fill="none" stroke="black" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                            </svg>
+                                        </span>
+                                        <span role="gridcell">
+                                            <span role="checkbox" class="mdc-chip__primary-action" tabindex="0">
+                                                <span class="mdc-chip__text">Museums</span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div class="mdc-chip mdc-chip--filter" role="row">
+                                        <div class="mdc-chip__ripple"></div>
+                                        <span class="mdc-chip__checkmark">
+                                            <svg class="mdc-chip__checkmark-svg" viewBox="-2 -3 30 30">
+                                                <path class="mdc-chip__checkmark-path" fill="none" stroke="black" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                            </svg>
+                                        </span>
+                                        <span role="gridcell">
+                                            <span role="checkbox" class="mdc-chip__primary-action" tabindex="0">
+                                                <span class="mdc-chip__text">Concerts</span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div class="mdc-chip mdc-chip--filter" role="row">
+                                        <div class="mdc-chip__ripple"></div>
+                                        <span class="mdc-chip__checkmark">
+                                            <svg class="mdc-chip__checkmark-svg" viewBox="-2 -3 30 30">
+                                                <path class="mdc-chip__checkmark-path" fill="none" stroke="black" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                            </svg>
+                                        </span>
+                                        <span role="gridcell">
+                                            <span role="checkbox" class="mdc-chip__primary-action" tabindex="0">
+                                                <span class="mdc-chip__text">Art Galleries</span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div class="mdc-chip mdc-chip--filter" role="row">
+                                        <div class="mdc-chip__ripple"></div>
+                                        <span class="mdc-chip__checkmark">
+                                            <svg class="mdc-chip__checkmark-svg" viewBox="-2 -3 30 30">
+                                                <path class="mdc-chip__checkmark-path" fill="none" stroke="black" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                            </svg>
+                                        </span>
+                                        <span role="gridcell">
+                                            <span role="checkbox" class="mdc-chip__primary-action" tabindex="0">
+                                                <span class="mdc-chip__text">Sports</span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div class="mdc-chip mdc-chip--filter" role="row">
+                                        <div class="mdc-chip__ripple"></div>
+                                        <span class="mdc-chip__checkmark">
+                                            <svg class="mdc-chip__checkmark-svg" viewBox="-2 -3 30 30">
+                                                <path class="mdc-chip__checkmark-path" fill="none" stroke="black" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                            </svg>
+                                        </span>
+                                        <span role="gridcell">
+                                            <span role="checkbox" class="mdc-chip__primary-action" tabindex="0">
+                                                <span class="mdc-chip__text">Nightlife</span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div class="mdc-chip mdc-chip--filter custom-chip" role="row">
+                                        <div class="mdc-chip__ripple"></div>
+                                        <span class="mdc-chip__checkmark">
+                                            <svg class="mdc-chip__checkmark-svg" viewBox="-2 -3 30 30">
+                                                <path class="mdc-chip__checkmark-path" fill="none" stroke="black" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                            </svg>
+                                        </span>
+                                        <span role="gridcell">
+                                            <span role="checkbox" class="mdc-chip__primary-action" tabindex="0">
+                                                <span class="mdc-chip__text">Other</span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="custom-input" id="events-custom" style="display: none;">
+                                    <div class="mdc-text-field mdc-text-field--outlined">
+                                        <input type="text" class="mdc-text-field__input" placeholder="Enter custom event type">
+                                        <div class="mdc-notched-outline">
+                                            <div class="mdc-notched-outline__leading"></div>
+                                            <div class="mdc-notched-outline__notch"></div>
+                                            <div class="mdc-notched-outline__trailing"></div>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="mdc-button mdc-button--outlined add-custom-btn">
+                                        <span class="mdc-button__ripple"></span>
+                                        <span class="mdc-button__label">Add</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="preference-section">
+                            <h3>Cuisines</h3>
+                            <div class="chips-container" id="cuisines-chips">
+                                <div class="mdc-chip-set mdc-chip-set--filter" role="grid">
+                                    <div class="mdc-chip mdc-chip--filter" role="row">
+                                        <div class="mdc-chip__ripple"></div>
+                                        <span class="mdc-chip__checkmark">
+                                            <svg class="mdc-chip__checkmark-svg" viewBox="-2 -3 30 30">
+                                                <path class="mdc-chip__checkmark-path" fill="none" stroke="black" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                            </svg>
+                                        </span>
+                                        <span role="gridcell">
+                                            <span role="checkbox" class="mdc-chip__primary-action" tabindex="0">
+                                                <span class="mdc-chip__text">Italian</span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div class="mdc-chip mdc-chip--filter" role="row">
+                                        <div class="mdc-chip__ripple"></div>
+                                        <span class="mdc-chip__checkmark">
+                                            <svg class="mdc-chip__checkmark-svg" viewBox="-2 -3 30 30">
+                                                <path class="mdc-chip__checkmark-path" fill="none" stroke="black" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                            </svg>
+                                        </span>
+                                        <span role="gridcell">
+                                            <span role="checkbox" class="mdc-chip__primary-action" tabindex="0">
+                                                <span class="mdc-chip__text">Asian</span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div class="mdc-chip mdc-chip--filter" role="row">
+                                        <div class="mdc-chip__ripple"></div>
+                                        <span class="mdc-chip__checkmark">
+                                            <svg class="mdc-chip__checkmark-svg" viewBox="-2 -3 30 30">
+                                                <path class="mdc-chip__checkmark-path" fill="none" stroke="black" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                            </svg>
+                                        </span>
+                                        <span role="gridcell">
+                                            <span role="checkbox" class="mdc-chip__primary-action" tabindex="0">
+                                                <span class="mdc-chip__text">Mexican</span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div class="mdc-chip mdc-chip--filter" role="row">
+                                        <div class="mdc-chip__ripple"></div>
+                                        <span class="mdc-chip__checkmark">
+                                            <svg class="mdc-chip__checkmark-svg" viewBox="-2 -3 30 30">
+                                                <path class="mdc-chip__checkmark-path" fill="none" stroke="black" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                            </svg>
+                                        </span>
+                                        <span role="gridcell">
+                                            <span role="checkbox" class="mdc-chip__primary-action" tabindex="0">
+                                                <span class="mdc-chip__text">Local</span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div class="mdc-chip mdc-chip--filter custom-chip" role="row">
+                                        <div class="mdc-chip__ripple"></div>
+                                        <span class="mdc-chip__checkmark">
+                                            <svg class="mdc-chip__checkmark-svg" viewBox="-2 -3 30 30">
+                                                <path class="mdc-chip__checkmark-path" fill="none" stroke="black" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                            </svg>
+                                        </span>
+                                        <span role="gridcell">
+                                            <span role="checkbox" class="mdc-chip__primary-action" tabindex="0">
+                                                <span class="mdc-chip__text">Other</span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="custom-input" id="cuisines-custom" style="display: none;">
+                                    <div class="mdc-text-field mdc-text-field--outlined">
+                                        <input type="text" class="mdc-text-field__input" placeholder="Enter custom cuisine">
+                                        <div class="mdc-notched-outline">
+                                            <div class="mdc-notched-outline__leading"></div>
+                                            <div class="mdc-notched-outline__notch"></div>
+                                            <div class="mdc-notched-outline__trailing"></div>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="mdc-button mdc-button--outlined add-custom-btn">
+                                        <span class="mdc-button__ripple"></span>
+                                        <span class="mdc-button__label">Add</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="preference-section">
+                            <h3>Budget & Currency</h3>
+                            <div class="budget-controls">
+                                <div class="budget-slider-container">
+                                    <label for="budgetSlider" class="budget-label">Budget Per Day (USD)</label>
+                                    <input type="range" id="budgetSlider" class="budget-slider" min="1" max="6" step="1" value="3">
+                                    <div class="budget-slider-labels">
+                                        <span>$50</span>
+                                        <span>$100</span>
+                                        <span>$250</span>
+                                        <span>$500</span>
+                                        <span>$1000</span>
+                                        <span>Custom</span>
+                                    </div>
+                                    <div class="budget-value-display">
+                                        <span id="budgetValue">$200 per day</span>
+                                        <span class="budget-level" id="budgetLevel">Normal</span>
+                                    </div>
+
+                                    <!-- Custom Budget Input -->
+                                    <div class="custom-budget-container" id="customBudgetContainer" style="display: none;">
+                                        <div class="mdc-text-field mdc-text-field--outlined custom-budget-field">
+                                            <input type="number" id="customBudget" class="mdc-text-field__input" min="1" placeholder="Enter amount">
+                                            <div class="mdc-notched-outline">
+                                                <div class="mdc-notched-outline__leading"></div>
+                                                <div class="mdc-notched-outline__notch">
+                                                    <label for="customBudget" class="mdc-floating-label">Custom Budget ($)</label>
+                                                </div>
+                                                <div class="mdc-notched-outline__trailing"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="preference-section">
+                                    <h3>Currency</h3>
+                                    <div class="chips-container" id="currency-chips" data-single-select="true">
+                                        <div class="mdc-chip-set mdc-chip-set--filter" role="grid">
+                                            <div class="mdc-chip mdc-chip--filter" role="row" data-value="USD">
+                                                <div class="mdc-chip__ripple"></div>
+                                                <span class="mdc-chip__checkmark">
+                                                    <svg class="mdc-chip__checkmark-svg" viewBox="-2 -3 30 30">
+                                                        <path class="mdc-chip__checkmark-path" fill="none" stroke="black" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                                    </svg>
+                                                </span>
+                                                <span role="gridcell">
+                                                    <span role="checkbox" class="mdc-chip__primary-action" tabindex="0">
+                                                        <span class="mdc-chip__text">USD</span>
+                                                    </span>
+                                                </span>
+                                            </div>
+                                            <div class="mdc-chip mdc-chip--filter" role="row" data-value="EUR">
+                                                <div class="mdc-chip__ripple"></div>
+                                                <span class="mdc-chip__checkmark">
+                                                    <svg class="mdc-chip__checkmark-svg" viewBox="-2 -3 30 30">
+                                                        <path class="mdc-chip__checkmark-path" fill="none" stroke="black" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                                    </svg>
+                                                </span>
+                                                <span role="gridcell">
+                                                    <span role="checkbox" class="mdc-chip__primary-action" tabindex="0">
+                                                        <span class="mdc-chip__text">EUR</span>
+                                                    </span>
+                                                </span>
+                                            </div>
+                                            <div class="mdc-chip mdc-chip--filter" role="row" data-value="GBP">
+                                                <div class="mdc-chip__ripple"></div>
+                                                <span class="mdc-chip__checkmark">
+                                                    <svg class="mdc-chip__checkmark-svg" viewBox="-2 -3 30 30">
+                                                        <path class="mdc-chip__checkmark-path" fill="none" stroke="black" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                                    </svg>
+                                                </span>
+                                                <span role="gridcell">
+                                                    <span role="checkbox" class="mdc-chip__primary-action" tabindex="0">
+                                                        <span class="mdc-chip__text">GBP</span>
+                                                    </span>
+                                                </span>
+                                            </div>
+                                            <div class="mdc-chip mdc-chip--filter" role="row" data-value="TRY">
+                                                <div class="mdc-chip__ripple"></div>
+                                                <span class="mdc-chip__checkmark">
+                                                    <svg class="mdc-chip__checkmark-svg" viewBox="-2 -3 30 30">
+                                                        <path class="mdc-chip__checkmark-path" fill="none" stroke="black" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                                    </svg>
+                                                </span>
+                                                <span role="gridcell">
+                                                    <span role="checkbox" class="mdc-chip__primary-action" tabindex="0">
+                                                        <span class="mdc-chip__text">TRY</span>
+                                                    </span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mdc-text-field mdc-text-field--outlined mdc-text-field--textarea">
+                            <span class="mdc-text-field__ripple"></span>
+                            <span class="mdc-text-field__resizer">
+                                <textarea class="mdc-text-field__input" id="general_notes" rows="3" cols="40" placeholder="Any additional notes or special requests..."></textarea>
+                            </span>
+                            <div class="mdc-notched-outline">
+                                <div class="mdc-notched-outline__leading"></div>
+                                <div class="mdc-notched-outline__notch">
+                                    <label for="general_notes" class="mdc-floating-label">General Notes (optional)</label>
+                                </div>
+                                <div class="mdc-notched-outline__trailing"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: Dislikes -->
+                    <div class="form-step" data-step="5">
+                        <h2 class="step-title">What would you like to avoid?</h2>
+
+                        <div class="preference-section">
+                            <h3>Events to Avoid</h3>
+                            <div class="chips-container" id="dislike-events-chips">
+                                <div class="mdc-chip-set mdc-chip-set--filter" role="grid">
+                                    <div class="mdc-chip mdc-chip--filter" role="row">
+                                        <div class="mdc-chip__ripple"></div>
+                                        <span class="mdc-chip__checkmark">
+                                            <svg class="mdc-chip__checkmark-svg" viewBox="-2 -3 30 30">
+                                                <path class="mdc-chip__checkmark-path" fill="none" stroke="black" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                            </svg>
+                                        </span>
+                                        <span role="gridcell">
+                                            <span role="checkbox" class="mdc-chip__primary-action" tabindex="0">
+                                                <span class="mdc-chip__text">Crowded Places</span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div class="mdc-chip mdc-chip--filter" role="row">
+                                        <div class="mdc-chip__ripple"></div>
+                                        <span class="mdc-chip__checkmark">
+                                            <svg class="mdc-chip__checkmark-svg" viewBox="-2 -3 30 30">
+                                                <path class="mdc-chip__checkmark-path" fill="none" stroke="black" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                            </svg>
+                                        </span>
+                                        <span role="gridcell">
+                                            <span role="checkbox" class="mdc-chip__primary-action" tabindex="0">
+                                                <span class="mdc-chip__text">Late Night Events</span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div class="mdc-chip mdc-chip--filter custom-chip" role="row">
+                                        <div class="mdc-chip__ripple"></div>
+                                        <span class="mdc-chip__checkmark">
+                                            <svg class="mdc-chip__checkmark-svg" viewBox="-2 -3 30 30">
+                                                <path class="mdc-chip__checkmark-path" fill="none" stroke="black" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                            </svg>
+                                        </span>
+                                        <span role="gridcell">
+                                            <span role="checkbox" class="mdc-chip__primary-action" tabindex="0">
+                                                <span class="mdc-chip__text">Other</span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mdc-text-field mdc-text-field--outlined mdc-text-field--textarea">
+                            <span class="mdc-text-field__ripple"></span>
+                            <span class="mdc-text-field__resizer">
+                                <textarea class="mdc-text-field__input" id="general_dislikes" rows="3" cols="40" placeholder="Anything else you'd like to avoid..."></textarea>
+                            </span>
+                            <div class="mdc-notched-outline">
+                                <div class="mdc-notched-outline__leading"></div>
+                                <div class="mdc-notched-outline__notch">
+                                    <label for="general_dislikes" class="mdc-floating-label">General Dislikes (optional)</label>
+                                </div>
+                                <div class="mdc-notched-outline__trailing"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 6: Hotel -->
+                    <div class="form-step" data-step="6">
+                        <h2 class="step-title">Hotel Preferences</h2>
+
+                        <div class="hotel-section">
+                            <div class="preference-section">
+                                <h3>Hotel Type</h3>
+                                <div class="chips-container" id="hotel-type-chips" data-single-select="true">
+                                    <div class="mdc-chip-set mdc-chip-set--filter" role="grid">
+                                        <div class="mdc-chip mdc-chip--filter" role="row" data-value="hostel">
+                                            <div class="mdc-chip__ripple"></div>
+                                            <span class="mdc-chip__checkmark">
+                                                <svg class="mdc-chip__checkmark-svg" viewBox="-2 -3 30 30">
+                                                    <path class="mdc-chip__checkmark-path" fill="none" stroke="black" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                                </svg>
+                                            </span>
+                                            <span role="gridcell">
+                                                <span role="checkbox" class="mdc-chip__primary-action" tabindex="0">
+                                                    <span class="mdc-chip__text">Hostel</span>
+                                                </span>
+                                            </span>
+                                        </div>
+                                        <div class="mdc-chip mdc-chip--filter" role="row" data-value="3-star">
+                                            <div class="mdc-chip__ripple"></div>
+                                            <span class="mdc-chip__checkmark">
+                                                <svg class="mdc-chip__checkmark-svg" viewBox="-2 -3 30 30">
+                                                    <path class="mdc-chip__checkmark-path" fill="none" stroke="black" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                                </svg>
+                                            </span>
+                                            <span role="gridcell">
+                                                <span role="checkbox" class="mdc-chip__primary-action" tabindex="0">
+                                                    <span class="mdc-chip__text">3-Star</span>
+                                                </span>
+                                            </span>
+                                        </div>
+                                        <div class="mdc-chip mdc-chip--filter" role="row" data-value="boutique">
+                                            <div class="mdc-chip__ripple"></div>
+                                            <span class="mdc-chip__checkmark">
+                                                <svg class="mdc-chip__checkmark-svg" viewBox="-2 -3 30 30">
+                                                    <path class="mdc-chip__checkmark-path" fill="none" stroke="black" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                                </svg>
+                                            </span>
+                                            <span role="gridcell">
+                                                <span role="checkbox" class="mdc-chip__primary-action" tabindex="0">
+                                                    <span class="mdc-chip__text">Boutique</span>
+                                                </span>
+                                            </span>
+                                        </div>
+                                        <div class="mdc-chip mdc-chip--filter" role="row" data-value="luxury">
+                                            <div class="mdc-chip__ripple"></div>
+                                            <span class="mdc-chip__checkmark">
+                                                <svg class="mdc-chip__checkmark-svg" viewBox="-2 -3 30 30">
+                                                    <path class="mdc-chip__checkmark-path" fill="none" stroke="black" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                                </svg>
+                                            </span>
+                                            <span role="gridcell">
+                                                <span role="checkbox" class="mdc-chip__primary-action" tabindex="0">
+                                                    <span class="mdc-chip__text">Luxury</span>
+                                                </span>
+                                            </span>
+                                        </div>
+                                        <div class="mdc-chip mdc-chip--filter" role="row" data-value="apartment">
+                                            <div class="mdc-chip__ripple"></div>
+                                            <span class="mdc-chip__checkmark">
+                                                <svg class="mdc-chip__checkmark-svg" viewBox="-2 -3 30 30">
+                                                    <path class="mdc-chip__checkmark-path" fill="none" stroke="black" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                                </svg>
+                                            </span>
+                                            <span role="gridcell">
+                                                <span role="checkbox" class="mdc-chip__primary-action" tabindex="0">
+                                                    <span class="mdc-chip__text">Apartment</span>
+                                                </span>
+                                            </span>
+                                        </div>
+                                        <div class="mdc-chip mdc-chip--filter" role="row" data-value="resort">
+                                            <div class="mdc-chip__ripple"></div>
+                                            <span class="mdc-chip__checkmark">
+                                                <svg class="mdc-chip__checkmark-svg" viewBox="-2 -3 30 30">
+                                                    <path class="mdc-chip__checkmark-path" fill="none" stroke="black" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                                </svg>
+                                            </span>
+                                            <span role="gridcell">
+                                                <span role="checkbox" class="mdc-chip__primary-action" tabindex="0">
+                                                    <span class="mdc-chip__text">Resort</span>
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mdc-text-field mdc-text-field--outlined mdc-text-field--textarea">
+                                <span class="mdc-text-field__ripple"></span>
+                                <span class="mdc-text-field__resizer">
+                                    <textarea class="mdc-text-field__input" id="special_requests" rows="3" cols="40" placeholder="Pet-friendly, accessible room, etc..."></textarea>
+                                </span>
+                                <div class="mdc-notched-outline">
+                                    <div class="mdc-notched-outline__leading"></div>
+                                    <div class="mdc-notched-outline__notch">
+                                        <label for="special_requests" class="mdc-floating-label">Special Requests (optional)</label>
+                                    </div>
+                                    <div class="mdc-notched-outline__trailing"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <div class="form-navigation">
+                        <button type="button" id="prevBtn" class="mdc-button mdc-button--outlined" style="display: none;">
+                            <span class="mdc-button__ripple"></span>
+                            <span class="mdc-button__label">Previous</span>
+                        </button>
+
+                        <button type="button" id="nextBtn" class="mdc-button mdc-button--raised">
+                            <span class="mdc-button__ripple"></span>
+                            <span class="mdc-button__label">Next</span>
+                        </button>
+
+                        <button type="submit" id="submitBtn" class="mdc-button mdc-button--raised" style="display: none;">
+                            <span class="mdc-button__ripple"></span>
+                            <span class="mdc-button__label">Generate Plan</span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- JSON Preview Panel -->
+                <div class="json-preview-panel" id="jsonPreviewPanel">
+                    <div class="mdc-card json-preview-card">
+                        <div class="mdc-card__content">
+                            <h3 class="json-preview-title">
+                                JSON Preview
+                                <button class="mdc-icon-button json-toggle" id="jsonToggle">
+                                    <span class="material-icons">expand_more</span>
+                                </button>
+                            </h3>
+                            <div class="json-preview-content" id="jsonPreviewContent">
+                                <pre class="json-display" id="jsonDisplay">{}</pre>
+                                <div class="json-actions">
+                                    <button class="mdc-button mdc-button--outlined" id="copyJsonBtn">
+                                        <span class="mdc-button__ripple"></span>
+                                        <span class="material-icons mdc-button__icon">content_copy</span>
+                                        <span class="mdc-button__label">Copy</span>
+                                    </button>
+                                    <button class="mdc-button mdc-button--outlined" id="downloadJsonBtn">
+                                        <span class="mdc-button__ripple"></span>
+                                        <span class="material-icons mdc-button__icon">download</span>
+                                        <span class="mdc-button__label">Download</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chat Panel -->
+        <section class="chat-section" id="chatSection">
+            <button class="chat-toggle-btn" id="chatToggleBtn">
+                <span class="material-icons">message</span>
+            </button>
+
+            <div class="chat-panel" id="chatPanel">
+                <div class="chat-header">
+                    <h3>Travel Assistant</h3>
+                    <div class="chat-actions">
+                        <button class="mdc-icon-button" id="chatSettingsBtn">
+                            <span class="material-icons">settings</span>
+                        </button>
+                        <button class="mdc-icon-button" id="chatCloseBtn">
+                            <span class="material-icons">close</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="chat-content">
+                    <div class="chat-messages" id="chatMessages">
+                        <!-- Messages will be dynamically added here -->
+                    </div>
+
+                    <div class="quick-suggestions">
+                        <div class="mdc-chip" tabindex="0">
+                            <div class="mdc-chip__ripple"></div>
+                            <span class="mdc-chip__text">Popular destinations</span>
+                        </div>
+                        <div class="mdc-chip" tabindex="0">
+                            <div class="mdc-chip__ripple"></div>
+                            <span class="mdc-chip__text">Budget tips</span>
+                        </div>
+                        <div class="mdc-chip" tabindex="0">
+                            <div class="mdc-chip__ripple"></div>
+                            <span class="mdc-chip__text">Local customs</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-input">
+                    <div class="mdc-text-field mdc-text-field--outlined chat-input-field">
+                        <input type="text" id="chatInput" class="mdc-text-field__input" placeholder="Ask me anything...">
+                        <div class="mdc-notched-outline">
+                            <div class="mdc-notched-outline__leading"></div>
+                            <div class="mdc-notched-outline__notch"></div>
+                            <div class="mdc-notched-outline__trailing"></div>
+                        </div>
+                    </div>
+                    <button class="mdc-icon-button chat-send-btn" id="chatSendBtn">
+                        <span class="material-icons">send</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="chat-resize-handle" id="chatResizeHandle"></div>
+        </section>
+    </main>
+
+    <!-- Material Components Web -->
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+
+    <!-- Markdown Parser -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@13.0.3/marked.min.js"></script>
+
+    <!-- Custom Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/form.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/main.js"></script>
+    
+    <!-- Debug Helper Script -->
+    <script>
+        // Debug functions for testing buttons and MDC components
+        window.debugHelper = {
+            testButtons: function() {
+                console.log('🔘 Testing button functionality...');
+                
+                const buttons = [
+                    'nextBtn', 'prevBtn', 'submitBtn',
+                    'chatToggleBtn', 'chatCloseBtn', 'chatSendBtn'
+                ];
+
+                let foundCount = 0;
+                buttons.forEach(id => {
+                    const btn = document.getElementById(id);
+                    if (btn) {
+                        console.log(`✅ Found button: ${id}`);
+                        foundCount++;
+                        
+                        // Test if button has event listeners
+                        const hasEventListeners = btn.onclick || btn.addEventListener.toString().includes('native code');
+                        console.log(`   - Has event listeners: ${hasEventListeners ? 'Yes' : 'Unknown'}`);
+                        console.log(`   - Classes: ${btn.className}`);
+                        console.log(`   - Disabled: ${btn.disabled}`);
+                    } else {
+                        console.log(`❌ Missing button: ${id}`);
+                    }
+                });
+                
+                console.log(`📊 Found ${foundCount}/${buttons.length} buttons`);
+                return foundCount === buttons.length;
+            },
+            
+            testMDC: function() {
+                console.log('🎨 Testing Material Design Components...');
+                
+                if (typeof mdc === 'undefined') {
+                    console.log('❌ MDC library not loaded');
+                    return false;
+                }
+                
+                console.log('✅ MDC library is available');
+                console.log('📦 Available MDC modules:', Object.keys(mdc));
+                
+                // Test if components are initialized
+                const textFields = document.querySelectorAll('.mdc-text-field');
+                const buttons = document.querySelectorAll('.mdc-button');
+                const iconButtons = document.querySelectorAll('.mdc-icon-button');
+                
+                console.log(`   - Text fields found: ${textFields.length}`);
+                console.log(`   - Buttons found: ${buttons.length}`);
+                console.log(`   - Icon buttons found: ${iconButtons.length}`);
+                
+                return true;
+            },
+            
+            runAllTests: function() {
+                console.log('🚀 Running all debug tests...');
+                console.log('===================================');
+                
+                const mdcTest = this.testMDC();
+                const buttonTest = this.testButtons();
+                
+                console.log('===================================');
+                console.log(`🎯 Test Summary:`);
+                console.log(`   - MDC Library: ${mdcTest ? '✅ PASS' : '❌ FAIL'}`);
+                console.log(`   - Buttons: ${buttonTest ? '✅ PASS' : '❌ FAIL'}`);
+                
+                if (mdcTest && buttonTest) {
+                    console.log('🎉 All tests passed! The app should be working correctly.');
+                } else {
+                    console.log('⚠️ Some tests failed. Check the issues above.');
+                }
+            }
+        };
+        
+        // Auto-run tests when page loads
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                console.log('🔍 Auto-running debug tests...');
+                window.debugHelper.runAllTests();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+{
+  "name": "tour-guidance-app",
+  "version": "1.0.0",
+  "description": "A modern tour guidance web application with Google Material Design",
+  "main": "index.html",
+  "scripts": {
+    "start": "npm run dev",
+    "dev": "node server.js",
+    "serve": "node server.js",
+    "serve-live": "node live-server.js",
+    "serve-node": "node server.js",
+    "serve-python": "python server.py",
+    "build": "npm run clean && npm run build-css && npm run minify-js",
+    "build-css": "npm run concat-css && npm run minify-css",
+    "concat-css": "concat-cli -f css/main.css css/material.css css/form.css css/chat.css css/maps.css -o dist/app.css",
+    "minify-css": "cleancss -o dist/app.min.css dist/app.css",
+    "minify-js": "terser js/*.js -o dist/app.min.js --source-map",
+    "watch": "concurrently \"npm run watch-css\" \"npm run watch-js\"",
+    "watch-css": "chokidar \"css/*.css\" -c \"npm run concat-css\"",
+    "watch-js": "chokidar \"js/*.js\" -c \"echo 'JS files changed'\"",
+    "lint": "eslint js/*.js",
+    "lint-fix": "eslint js/*.js --fix",
+    "format": "prettier --write \"**/*.{js,css,html,md}\"",
+    "validate": "npm run lint && npm run build",
+    "clean": "rimraf dist",
+    "test": "echo \"No tests specified\" && exit 0",
+    "preview": "live-server --port=8080 --host=localhost --open=/routes.html --cors",
+    "setup": "npm install && mkdir -p dist",
+    "postinstall": "mkdir -p dist"
+  },
+  "keywords": [
+    "tour-guidance",
+    "travel",
+    "material-design",
+    "responsive",
+    "google-maps",
+    "vanilla-js"
+  ],
+  "author": "Tour Guidance Team",
+  "license": "MIT",
+  "devDependencies": {
+    "chokidar-cli": "^3.0.0",
+    "clean-css-cli": "^5.6.3",
+    "concat-cli": "^4.0.0",
+    "concurrently": "^8.2.2",
+    "eslint": "^8.55.0",
+    "live-server": "^1.2.2",
+    "prettier": "^3.1.0",
+    "rimraf": "^5.0.5",
+    "terser": "^5.24.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "node-fetch": "^3.3.2"
+  },
+  "browserslist": [
+    "Chrome >= 60",
+    "Firefox >= 60",
+    "Safari >= 12",
+    "Edge >= 79"
+  ],
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/tour-guidance-app.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/tour-guidance-app/issues"
+  },
+  "homepage": "https://github.com/your-username/tour-guidance-app#readme"
+}

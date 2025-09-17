@@ -1,0 +1,35 @@
+{
+  "city": null,
+  "country": null,
+  "date": {
+    "start_date": null,
+    "end_date": null,
+    "number_of_days": null
+  },
+  "people": {
+    "number_of_people": null,
+    "people_details": null
+  },
+  "preferences": {
+    "events": null,
+    "cousines": null,
+    "places": null,
+    "budget_amount": 250,
+    "currency": null,
+    "general_notes": null
+  },
+  "dislikes": {
+    "events": null,
+    "cousines": null,
+    "places": null,
+    "general_note": null
+  },
+  "hotel": {
+    "hotel_type": null,
+    "location_preference": null,
+    "budget_per_night": null,
+    "amenities": null,
+    "room_type": null,
+    "special_requests": null
+  }
+}
