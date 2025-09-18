@@ -1,175 +1,218 @@
+# Tourgent: AI-Powered Travel Planning Platform
 
+> **Stop wasting hours planning your trips.** Let AI agents create personalized itineraries in minutes, not days.
 
-# Tourgent: Modular Travel & Planning Agent (ADK)
+🌟 **[Try Tourgent Live](https://tourgent-v6-841879234183.us-central1.run.app)** 🌟
 
-This repository implements a modular, multi-agent system for travel planning and itinerary generation using Google's Agent Development Kit (ADK). The core logic is in the `app/` directory, with sub-agents for planning, hotels, events, and maps. The project is designed for extensibility, observability, and production deployment on Google Cloud.
+## 🎯 The Problem We Solve
 
-## Project Structure
+**Traditional travel planning is broken:**
+- ⏰ **Time-consuming**: Travelers spend 8-12 hours researching destinations, comparing hotels, finding restaurants, and creating itineraries
+- 🔄 **Repetitive research**: Endlessly browsing review sites, maps, and booking platforms across multiple tabs
+- 😤 **Decision fatigue**: Overwhelming choices lead to analysis paralysis and suboptimal decisions
+- 📱 **Fragmented experience**: Switching between different apps and websites disrupts the planning flow
+- 🎯 **Generic recommendations**: Cookie-cutter suggestions that don't match personal preferences or travel style
+
+**Tourgent transforms travel planning from a chore into an effortless experience** using intelligent AI agents that understand your preferences, budget, and travel goals.
+
+## ✨ Key Features
+
+### 🤖 Multi-Agent AI Planning
+- **Planning Agent**: Creates comprehensive itineraries based on your preferences
+- **Hotel Agent**: Finds accommodations matching your budget and location needs
+- **Events Agent**: Discovers local attractions, restaurants, and activities
+- **Maps Agent**: Optimizes routes and provides real-time navigation
+
+### 🎨 Intuitive Interface
+- **Material Design**: Clean, responsive web interface
+- **Interactive Maps**: Visual itinerary planning with Google Maps integration
+- **Real-time Updates**: Live agent responses and dynamic content loading
+- **Mobile-First**: Optimized for planning on-the-go
+
+### ⚡ Lightning Fast
+- **Instant Results**: Generate complete itineraries in under 2 minutes
+- **Parallel Processing**: Multiple agents work simultaneously
+- **Smart Caching**: Faster subsequent requests for popular destinations
+
+## 🌐 Live Demo
+
+**[🚀 Use Tourgent Now](https://tourgent-v6-841879234183.us-central1.run.app)**
+
+Experience the full power of AI-driven travel planning in production!
+
+## 🏗️ Architecture
 
 ```
-app/
-	__init__.py
-	agent.py              # Main root agent definition (entry point)
-	agent_engine_app.py   # Agent Engine application logic for deployment
-	inputSchema.py        # Input schema for itinerary requests
-	index.yml             # Root agent prompt
-	sub_agents/
-		hotels_agent/
-		events_agent/
-		maps_agent/
-		planner_agent/
-	utils/
-		gcs.py
-		tracing.py
-		typing.py
-deployment/
-	README.md
-	terraform/           # Infrastructure as code for GCP
-notebooks/             # Jupyter notebooks for prototyping and evaluation
-tests/                 # Unit, integration, and load tests
-Makefile               # Common development commands
-pyproject.toml         # Project dependencies and configuration
-GEMINI.md              # ADK and agent development reference
-MANIFEST.in            # Package data (YAML prompt files)
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│   Frontend      │────│   ADK Backend    │────│  External APIs  │
+│   (Vanilla JS)  │    │  (Multi-Agents)  │    │ (Google Maps)   │
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+         │                       │                       │
+         │              ┌────────┴────────┐             │
+         │              │                 │             │
+         └──────────────┤  Agent Router   ├─────────────┘
+                        │                 │
+                        └─────────────────┘
 ```
 
-## Key Features
+**Technology Stack:**
+- **Backend**: ADK (Agent Development Kit) with Python
+- **Frontend**: Vanilla JavaScript, Material Design Components
+- **Infrastructure**: Google Cloud Platform, Docker, Cloud Run
+- **APIs**: Google Maps API, Google Places API
 
-- **Modular agent architecture**: Each travel domain (planning, hotels, events, maps) is handled by a dedicated sub-agent in `app/sub_agents/`.
-- **YAML-driven prompts**: Agent instructions and system prompts are managed via YAML files for easy customization.
-- **Pydantic schemas**: Input and output schemas are strictly validated for robust data handling.
-- **Cloud-native deployment**: Terraform and Makefile scripts for GCP infrastructure and CI/CD.
-- **Observability**: OpenTelemetry tracing and logging, with custom GCS integration for large payloads.
+## 🚀 Quick Start
 
-## How to Use
+### Local Development (Recommended)
+**The simplest way to run Tourgent locally:**
 
-- The main agent is imported from `app.agent`:
+```bash
+# Clone the repository
+git clone https://github.com/ebrrylcn/agentic-era-hack.git
+cd agentic-era-hack
 
-	```python
-	from app.agent import root_agent
-	```
+# Setup frontend (navigate to frontend directory)
+cd frontend
+npm install
+npm start
 
-- All orchestration, planning, and sub-agent logic is defined in `app/`.
-- YAML prompt files are included in the package and loaded at runtime.
-- For local testing, use the provided Makefile commands.
+# Open your browser to localhost:8002
+# That's it! 🎉
+```
 
-## Development & Testing
+### Alternative: Backend Development
+If you want to work with the AI agents:
 
-1. **Install dependencies:**
-	 ```bash
-	 make install
-	 ```
-2. **Test your agent:**
-	 - Programmatically: Write a script to import and call `root_agent` (see `GEMINI.md` for examples).
-	 - Manually: Run `make playground` for a local UI.
-3. **Run unit/integration tests:**
-	 ```bash
-	 make test
-	 ```
+```bash
+# Install Python dependencies
+make install
 
-## Deployment
+# Run the playground for agent testing
+make playground
+```
 
-- Use `make backend` to deploy the agent to Vertex AI Agent Engine.
-- Infrastructure is managed with Terraform in `deployment/terraform/`.
-- See `deployment/README.md` for details.
+## 📁 Project Structure
 
-## For Developers
+```
+agentic-era-hack/
+├── app/                        # Backend AI agents
+│   ├── sub_agents/
+│   │   ├── planner_agent/      # Main itinerary planning
+│   │   ├── hotels_agent/       # Hotel recommendations
+│   │   ├── events_agent/       # Activities & attractions
+│   │   └── maps_agent/         # Route optimization
+│   ├── agent.py                # Root agent orchestrator
+│   ├── agent_engine_app.py     # App deployment logic
+│   └── utils/                  # Shared utilities
+├── frontend/                   # Web interface
+│   ├── index.html              # Main UI
+│   ├── css/                    # Stylesheets
+│   ├── js/                     # JavaScript modules
+│   └── package.json            # Frontend dependencies
+├── deployment/                 # Cloud infrastructure
+│   └── terraform/              # Infrastructure as code
+├── notebooks/                  # Development & testing
+├── tests/                      # Test suites
+├── Dockerfile                  # Container configuration
+├── Makefile                    # Development commands
+└── pyproject.toml             # Python dependencies
+```
 
-- To add or modify agent logic, edit files in `app/` and its subdirectories.
-- To update prompts, edit the YAML files in `app/` and `app/sub_agents/`.
-- Add new dependencies to `pyproject.toml`.
-- For advanced ADK usage, see `GEMINI.md`.
+## 🛠️ Development Guide
+
+### Frontend Development
+```bash
+cd frontend
+npm install          # Install dependencies
+npm start           # Start development server (localhost:8002)
+npm run build       # Production build
+```
+
+### Agent Configuration
+Customize AI behavior by editing YAML files in `app/sub_agents/`:
+- `planner_agent/index.yml` - Main itinerary creation
+- `hotels_agent/index.yml` - Accommodation search
+- `events_agent/index.yml` - Activity recommendations
+- `maps_agent/index.yml` - Route optimization
+
+## ⚙️ Configuration
+
+### Environment Variables
+```bash
+# Required for Google Maps integration
+GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+GOOGLE_PLACES_API_KEY=your_google_places_api_key
+SERPAPI_API_KEY=your_serpapi_key
+```
+
+## 🚀 Deployment
+
+### Live Production
+**Current deployment**: [https://tourgent-v6-841879234183.us-central1.run.app](https://tourgent-v6-841879234183.us-central1.run.app)
+
+### Cloud Deployment Process
+
+#### Step 1: Setup Secrets in Google Cloud
+```bash
+# Store API keys securely in Secret Manager
+gcloud secrets create GOOGLE_MAPS_API_KEY --data-file=-
+# Enter your API key when prompted
+```
+
+#### Step 2: Build and Deploy
+```bash
+# Build Docker image and push to Google Container Registry
+gcloud builds submit --tag gcr.io/{YOUR-PROJECT-ID}/tourgent .
+
+# Deploy to Cloud Run with secrets integration
+gcloud run deploy tourgent \
+  --image=gcr.io/{YOUR-PROJECT-ID}/tourgent \
+  --platform managed \
+  --concurrency 5 \
+  --update-secrets=GOOGLE_MAPS_API_KEY=projects/{YOUR-PROJECT-ID}/secrets/GOOGLE_MAPS_API_KEY:latest
+```
+
+#### Docker Configuration
+The project includes a production-ready `Dockerfile` for containerized deployment on Google Cloud Run.
+
+## 🤝 Contributing
+
+1. **Fork the repository**: [https://github.com/ebrrylcn/agentic-era-hack](https://github.com/ebrrylcn/agentic-era-hack)
+2. **Create feature branch**: `git checkout -b feature/amazing-feature`
+3. **Follow code style**: Run `make lint` before committing
+4. **Add tests**: Ensure `make test` passes
+5. **Submit pull request**: Detailed description of changes
+
+### Code Style
+- **Python**: Black formatting, type hints required
+- **JavaScript**: ESLint configuration in `frontend/.eslintrc.js`
+- **Commits**: Conventional commit format
+
+## 🆘 Support
+
+Need help or have questions? Reach out to our development team:
+
+### 👥 Development Team
+
+**Team Lead:**
+- 📧 **Ebrar Yalçın**: [ebrar.yalcin@turkcell.com.tr](mailto:ebrar.yalcin@turkcell.com.tr)
+
+**Developers:**
+- 📧 **Yusuf Güldemir**: [yusuf.guldemir@turkcell.com.tr](mailto:yusuf.guldemir@turkcell.com.tr)
+- 📧 **Emirhan Gazi**: [emirhan.gazi@turkcell.com.tr](mailto:emirhan.gazi@turkcell.com.tr)
+- 📧 **Burak Ercan**: [burak.ercan@turkcell.com.tr](mailto:burak.ercan@turkcell.com.tr)
+- 📧 **Utku Atasoy**: [utku.atasoy@turkcell.com.tr](mailto:utku.atasoy@turkcell.com.tr)
+
+**Response Time**: We typically respond within 24-48 hours during business days.
+
+**For urgent issues**: Please contact our team lead directly.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-This project is based on the Google Cloud Agent Starter Pack and follows best practices for modular, production-ready GenAI agent development.
+**Built with ❤️ for travelers who value their time**
 
-## Project Structure
-
-```
-tourgent/
-├── app/                 # Core application code
-│   ├── agent.py         # Main agent logic
-│   ├── agent_engine_app.py # Agent Engine application logic
-│   └── utils/           # Utility functions and helpers
-├── .cloudbuild/         # CI/CD pipeline configurations for Google Cloud Build
-├── deployment/          # Infrastructure and deployment scripts
-├── notebooks/           # Jupyter notebooks for prototyping and evaluation
-├── tests/               # Unit, integration, and load tests
-├── Makefile             # Makefile for common commands
-├── GEMINI.md            # AI-assisted development guide
-└── pyproject.toml       # Project dependencies and configuration
-```
-
-## Requirements
-
-Before you begin, ensure you have:
-- **uv**: Python package manager (used for all dependency management in this project) - [Install](https://docs.astral.sh/uv/getting-started/installation/) ([add packages](https://docs.astral.sh/uv/concepts/dependencies/) with `uv add <package>`)
-- **Google Cloud SDK**: For GCP services - [Install](https://cloud.google.com/sdk/docs/install)
-- **Terraform**: For infrastructure deployment - [Install](https://developer.hashicorp.com/terraform/downloads)
-- **make**: Build automation tool - [Install](https://www.gnu.org/software/make/) (pre-installed on most Unix-based systems)
-
-
-## Quick Start (Local Testing)
-
-Install required packages and launch the local development environment:
-
-```bash
-make install && make playground
-```
-
-## Commands
-
-| Command              | Description                                                                                 |
-| -------------------- | ------------------------------------------------------------------------------------------- |
-| `make install`       | Install all required dependencies using uv                                                  |
-| `make playground`    | Launch Streamlit interface for testing agent locally and remotely |
-| `make backend`       | Deploy agent to Agent Engine |
-| `make test`          | Run unit and integration tests                                                              |
-| `make lint`          | Run code quality checks (codespell, ruff, mypy)                                             |
-| `make setup-dev-env` | Set up development environment resources using Terraform                         |
-| `uv run jupyter lab` | Launch Jupyter notebook                                                                     |
-
-For full command options and usage, refer to the [Makefile](Makefile).
-
-
-## Usage
-
-This template follows a "bring your own agent" approach - you focus on your business logic, and the template handles everything else (UI, infrastructure, deployment, monitoring).
-
-1. **Prototype:** Build your Generative AI Agent using the intro notebooks in `notebooks/` for guidance. Use Vertex AI Evaluation to assess performance.
-2. **Integrate:** Import your agent into the app by editing `app/agent.py`.
-3. **Test:** Explore your agent functionality using the Streamlit playground with `make playground`. The playground offers features like chat history, user feedback, and various input types, and automatically reloads your agent on code changes.
-4. **Deploy:** Set up and initiate the CI/CD pipelines, customizing tests as necessary. Refer to the [deployment section](#deployment) for comprehensive instructions. For streamlined infrastructure deployment, simply run `uvx agent-starter-pack setup-cicd`. Check out the [`agent-starter-pack setup-cicd` CLI command](https://googlecloudplatform.github.io/agent-starter-pack/cli/setup_cicd.html). Currently supports GitHub with both Google Cloud Build and GitHub Actions as CI/CD runners.
-5. **Monitor:** Track performance and gather insights using Cloud Logging, Tracing, and the Looker Studio dashboard to iterate on your application.
-
-The project includes a `GEMINI.md` file that provides context for AI tools like Gemini CLI when asking questions about your template.
-
-
-## Deployment
-
-> **Note:** For a streamlined one-command deployment of the entire CI/CD pipeline and infrastructure using Terraform, you can use the [`agent-starter-pack setup-cicd` CLI command](https://googlecloudplatform.github.io/agent-starter-pack/cli/setup_cicd.html). Currently supports GitHub with both Google Cloud Build and GitHub Actions as CI/CD runners.
-
-### Dev Environment
-
-You can test deployment towards a Dev Environment using the following command:
-
-```bash
-gcloud config set project <your-dev-project-id>
-make backend
-```
-
-
-The repository includes a Terraform configuration for the setup of the Dev Google Cloud project.
-See [deployment/README.md](deployment/README.md) for instructions.
-
-### Production Deployment
-
-The repository includes a Terraform configuration for the setup of a production Google Cloud project. Refer to [deployment/README.md](deployment/README.md) for detailed instructions on how to deploy the infrastructure and application.
-
-
-## Monitoring and Observability
-> You can use [this Looker Studio dashboard](https://lookerstudio.google.com/reporting/46b35167-b38b-4e44-bd37-701ef4307418/page/tEnnC
-) template for visualizing events being logged in BigQuery. See the "Setup Instructions" tab to getting started.
-
-The application uses OpenTelemetry for comprehensive observability with all events being sent to Google Cloud Trace and Logging for monitoring and to BigQuery for long term storage.
+**[🌟 Start Planning Your Trip Now](https://tourgent-v6-841879234183.us-central1.run.app)**
