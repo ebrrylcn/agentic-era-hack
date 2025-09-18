@@ -123,6 +123,8 @@ def hotels_search(
         )
 
         # === LOCATION SEARCH ===
+        api_key_google = os.getenv("GOOGLE_MAPS_API_KEY")
+
         if location is not None:
             response = google_places_text_search(
                 text_query=f"hotels lodging in {location}",
@@ -132,7 +134,8 @@ def hotels_search(
                 price_levels=price_levels,
                 open_now=open_now,
                 page_size=min(max_results, 20),
-                language_code="en"
+                language_code="en",
+                api_key=api_key_google
             )
 
             if "error" in response:
@@ -168,7 +171,8 @@ def hotels_search(
                 field_mask=field_mask,
                 included_types=["lodging"],
                 max_result_count=min(max_results, 20),
-                language_code="en"
+                language_code="en",
+                api_key=api_key_google
             )
 
             if "error" in response:
@@ -231,6 +235,7 @@ def hotel_details_and_prices(
     sort_by: Optional[int] = None,
 ) -> Dict[str, Any]:
     details_ret, prices_ret = None, None
+    api_key_google = os.getenv("GOOGLE_MAPS_API_KEY")
     if place_id:
         try:
             include_photos = include_photos if include_photos is not None else True
@@ -242,7 +247,7 @@ def hotel_details_and_prices(
             )
             if include_photos: field_mask += ",photos"
             if include_reviews: field_mask += ",reviews"
-            response = google_places_place_details(place_id=place_id, field_mask=field_mask, language_code="en")
+            response = google_places_place_details(place_id=place_id, field_mask=field_mask, language_code="en", api_key=api_key_google)
             if "error" in response:
                 details_ret = {"status": "error", "error": f"Details fetch failed: {response['error']}", "result": None}
             else:
@@ -297,13 +302,15 @@ def hotels_analyze(
     check_in: Optional[str] = None,
     check_out: Optional[str] = None,
 ) -> Dict[str, Any]:
+    api_key_google = os.getenv("GOOGLE_MAPS_API_KEY")
     if mode == "location":
         try:
             response = google_places_text_search(
                 text_query=f"{hotel_name} {city} lodging",
                 field_mask="places.id,places.displayName,places.location,places.formattedAddress",
                 included_type="lodging",
-                page_size=1
+                page_size=1,
+                api_key=api_key_google
             )
             if "error" in response or not response.get("places"):
                 return {"status": "error", "error": "Hotel not found", "results": []}
@@ -320,7 +327,8 @@ def hotels_analyze(
                 longitude=mid_lng,
                 radius=5000,
                 included_types=["lodging"],
-                field_mask="places.id,places.displayName,places.formattedAddress,places.location,places.rating"
+                field_mask="places.id,places.displayName,places.formattedAddress,places.location,places.rating",
+                api_key=api_key_google
             )
             if "error" in response:
                 return {"status": "error", "error": response["error"], "results": []}
