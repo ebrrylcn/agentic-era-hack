@@ -26,20 +26,21 @@ planner_summary_agent = LlmAgent(
     description="Agent that summarizes and refines the travel itinerary based on inputs from sub-agents"
 )
 
-summary_evaluator_agent = LlmAgent(
-    model='gemini-2.5-pro',
-    name='summary_evaluator_agent',
-    instruction=prompts['summaryEvaluatorAgent']['systemPrompt'],
-    output_schema=ItineraryResponse,
-    output_key='corrected_itinerary',
-    description="Agent that evaluates and corrects the travel itinerary summary"
-)
+# summary_evaluator_agent = LlmAgent(
+#     model='gemini-2.5-pro',
+#     name='summary_evaluator_agent',
+#     instruction=prompts['summaryEvaluatorAgent']['systemPrompt'],
+#     output_schema=ItineraryResponse,
+#     output_key='corrected_itinerary',
+#     description="Agent that evaluates and corrects the travel itinerary summary"
+# )
 
-planner_loop_agent = LlmAgent(
-    name="planner_loop_agent",
-    sub_agents=[planner_summary_agent, summary_evaluator_agent],
-    description="Agent that iteratively refines the travel itinerary summary"
-)
+# planner_loop_agent = LlmAgent(
+#     name="planner_loop_agent",
+#     sub_agents=[planner_summary_agent, summary_evaluator_agent],
+#     description="Agent that iteratively refines the travel itinerary summary"
+# )
+
 root_planner_agent = LlmAgent(
     model='gemini-2.5-pro',
     name='planner_agent',
@@ -47,7 +48,7 @@ root_planner_agent = LlmAgent(
     planner=PlanReActPlanner(),
     sub_agents=[
         text_search_agent, place_details_agent, nearby_search_agent,
-        hotels_agent, events_agent, planner_loop_agent
+        hotels_agent, events_agent, planner_summary_agent
     ],
     description="Agent that plans a travel itinerary based on user input, utilizing maps, hotels, and events sub-agents"
 )
