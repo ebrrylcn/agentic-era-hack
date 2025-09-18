@@ -4,8 +4,10 @@
  * Serves frontend files and allows access to .env file
  */
 
-const express = require('express');
 const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+
+const express = require('express');
 const fs = require('fs');
 const cors = require('cors');
 
@@ -18,10 +20,53 @@ app.use(cors());
 // Add JSON body parser
 app.use(express.json());
 
-// Serve static files from current directory
-app.use(express.static(__dirname));
+// API endpoint to get configuration (supports both .env and Cloud Run secrets)
+app.get('/api/config', (req, res) => {
+    const config = {
+        GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY || '',
+        GOOGLE_API_KEY: process.env.GOOGLE_API_KEY || '',
+        // Add any other frontend-needed config here
+    };
 
-// API endpoint to read the .env file
+    // If no environment variables found, try reading from .env file as fallback
+    if (!config.GOOGLE_MAPS_API_KEY && !config.GOOGLE_API_KEY) {
+        const envPath = path.join(__dirname, '..', '.env');
+
+        try {
+            if (fs.existsSync(envPath)) {
+                const envContent = fs.readFileSync(envPath, 'utf8');
+                const lines = envContent.split('\n');
+
+                lines.forEach(line => {
+                    line = line.trim();
+                    if (!line || line.startsWith('#')) return;
+
+                    const equalIndex = line.indexOf('=');
+                    if (equalIndex > 0) {
+                        const key = line.substring(0, equalIndex).trim();
+                        let value = line.substring(equalIndex + 1).trim();
+
+                        // Remove quotes if present
+                        if ((value.startsWith('"') && value.endsWith('"')) ||
+                            (value.startsWith("'") && value.endsWith("'"))) {
+                            value = value.slice(1, -1);
+                        }
+
+                        if (key === 'GOOGLE_MAPS_API_KEY' || key === 'GOOGLE_API_KEY') {
+                            config[key] = value;
+                        }
+                    }
+                });
+            }
+        } catch (error) {
+            console.warn('Could not read .env file as fallback:', error);
+        }
+    }
+
+    res.json(config);
+});
+
+// API endpoint to read the .env file (deprecated, kept for backward compatibility)
 app.get('/api/env', (req, res) => {
     const envPath = path.join(__dirname, '..', '.env');
 
@@ -273,6 +318,9 @@ app.post('/api/save-output', async (req, res) => {
     }
 });
 
+// Serve static files from current directory (after API routes)
+app.use(express.static(__dirname));
+
 // Serve index.html for root path
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
@@ -302,7 +350,12 @@ app.listen(PORT, () => {
     console.log(`   http://127.0.0.1:${PORT}`);
     console.log('');
     console.log('📁 Serving files from:', __dirname);
-    console.log('🔑 .env file accessible from parent directory');
+    console.log('🔑 Environment configuration:');
+    if (process.env.GOOGLE_MAPS_API_KEY) {
+        console.log('   ✅ GOOGLE_MAPS_API_KEY loaded from environment');
+    } else {
+        console.log('   ⚠️  GOOGLE_MAPS_API_KEY not found in environment, will use .env file');
+    }
     console.log('');
     console.log('Press Ctrl+C to stop the server');
     console.log('-'.repeat(50));

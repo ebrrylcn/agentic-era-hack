@@ -7,22 +7,28 @@ class ConfigLoader {
     }
 
     /**
-     * Load configuration from .env file
+     * Load configuration from server API
      */
     async loadConfig() {
         try {
-            // Try to load from parent directory .env file
-            const response = await fetch('../.env');
+            // Try to load from /api/config endpoint (supports both env vars and .env file)
+            const response = await fetch('/api/config');
 
             if (response.ok) {
-                const envText = await response.text();
-                this.parseEnvFile(envText);
+                const config = await response.json();
+                this.config = config;
+
+                // Check if we got valid config
+                if (!config.GOOGLE_MAPS_API_KEY || config.GOOGLE_MAPS_API_KEY === '') {
+                    console.warn('No API keys found in server config, using fallback');
+                    this.loadFallbackConfig();
+                }
             } else {
-                console.warn('Could not load .env file, using fallback configuration');
+                console.warn('Could not load config from server, using fallback configuration');
                 this.loadFallbackConfig();
             }
         } catch (error) {
-            console.warn('Error loading .env file:', error);
+            console.warn('Error loading configuration:', error);
             this.loadFallbackConfig();
         }
 
