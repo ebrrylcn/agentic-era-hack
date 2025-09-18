@@ -175,7 +175,91 @@ gcloud run deploy tourgent \
 #### Docker Configuration
 The project includes a production-ready `Dockerfile` for containerized deployment on Google Cloud Run.
 
-## 🤝 Contributing
+## � Test Cases & Evaluation
+
+### 📝 Comprehensive Test Prompt Collection
+
+To help you evaluate Tourgent's capabilities across different travel scenarios, we've prepared 10 comprehensive test cases covering various destinations, budgets, and travel styles:
+
+#### 🇪🇺 **European Destinations**
+
+**1. Multi-City Classic Europe**
+```
+Plan a 5-day Paris-Amsterdam trip. First 3 days in Paris (Eiffel Tower, Louvre, Montmartre), last 2 days in Amsterdam (canals, museums, bike tours). September 21-25. Mid-range hotels, local bistro and café recommendations. Train travel between cities. Different neighborhood experiences in each city with price comparisons. Daily budget 150-250 EUR.
+```
+
+**2. Mediterranean Barcelona**
+```
+3-day architecture and beach vacation in Barcelona. September 21-23. Gaudí masterpieces (Sagrada Familia, Park Güell), Gothic Quarter, Las Ramblas. Beach time at Barceloneta, tapas bar crawl. Flamenco show, Picasso Museum. Boutique hotels in Gothic Quarter. Paella, sangria, Catalan cuisine experience. Daily budget €120-200.
+```
+
+**3. Eastern Europe Prague**
+```
+4-day cultural trip to Prague. September 20-23. Old Town Square, Prague Castle, Charles Bridge. Czech beer culture, traditional pubs, castle tours. Gothic and Baroque architecture tours. Vltava River boat cruise. Hostels or mid-range hotels near Old Town. Czech street food and traditional dishes. Daily budget €80-150.
+```
+
+**4. Imperial Cities: Vienna-Budapest**
+```
+5-day imperial cities tour Vienna-Budapest. First 3 days Vienna (Schönbrunn Palace, Stephansdom, coffee house culture), last 2 days Budapest (Parliament, thermal baths, Danube cruise). Classical music concerts, Habsburg history. Train travel between cities. Hotels near imperial palaces. Austrian schnitzel vs Hungarian goulash. Daily budget €100-180.
+```
+
+#### 🇺🇸🇨🇦 **North American Adventures**
+
+**5. West Coast Los Angeles**
+```
+4-day entertainment vacation in Los Angeles. September 22-25. Hollywood, Beverly Hills, Santa Monica Pier, Venice Beach. Theme parks (Disneyland or Universal Studios), film studio tours. American fast-food experience vs fine dining comparison. Downtown LA or Hollywood area hotels. Car rental and traffic information. Daily budget $200-400.
+```
+
+**6. East Coast New York**
+```
+5-day city experience in New York. September 20-24. Manhattan (Times Square, Central Park, 9/11 Memorial), Brooklyn (hipster neighborhoods), Queens (ethnic cuisine). Broadway show, museums (MoMA, Met), Statue of Liberty. Bagel, pizza, deli culture. Midtown or Brooklyn accommodation options. Metro card and walking tours. Daily budget $250-450.
+```
+
+**7. Canadian Nature: Vancouver**
+```
+4-day outdoor vacation in Vancouver, Canada. September 22-25. Stanley Park, Grouse Mountain, Capilano Suspension Bridge. Whale watching, kayaking, hiking trails. Granville Island Market, Richmond Night Market. Downtown Vancouver hotels, outdoor gear rental. Canadian cuisine, seafood, multicultural food scene. Daily budget CAD $180-320.
+```
+
+**8. Southern Culture: New Orleans**
+```
+3-day music and culinary festival in New Orleans. September 23-25. French Quarter, jazz clubs, voodoo culture. Swamp tour, plantation visits. Creole and Cajun cuisine (jambalaya, gumbo, beignets). Bourbon Street nightlife, live music venues. Historic inns in Garden District. Hurricane cocktails, jazz brunch. Daily budget $150-280.
+```
+
+#### 🇹🇷 **Turkish Destinations**
+
+**9. Istanbul Gastronomy**
+```
+3-day gastronomy tour in Istanbul. September 23-25. Fish sandwich in Eminönü, modern cuisine in Karaköy, traditional restaurant culture in Beşiktaş. Seafood along the Bosphorus, Ottoman cuisine in Sultanahmet. Traditional Turkish breakfast, street food and Michelin-recommended restaurants. Boutique hotels in Galata or Karaköy. Daily budget 1500-2500 TL.
+```
+
+**10. Cappadocia Adventure**
+```
+4-day adventure vacation in Cappadocia. September 24-27. Hot air balloon tour, ATV safari, underground cities (Derinkuyu), Love Valley hiking. Cave hotel experience, Göreme Open Air Museum. Pottery workshop, wine tasting. Accommodation options between Ürgüp and Göreme. Traditional Anatolian cuisine. Daily budget 2000-3500 TL.
+```
+
+### 🎯 **What These Tests Evaluate**
+
+- ✅ **Multi-Agent Coordination**: Planning, Hotels, Events, and Maps agents working together
+- ✅ **Global Coverage**: Europe, North America, and Turkey destinations
+- ✅ **Budget Diversity**: From €80 to $450 daily budgets across different currencies
+- ✅ **Cultural Adaptation**: Local customs, cuisines, and experiences
+- ✅ **Travel Styles**: Solo, couple, family, adventure, cultural, gastronomic
+- ✅ **Multi-City Planning**: Complex routing and logistics
+- ✅ **Seasonal Considerations**: September 2025 specific recommendations
+- ✅ **Accommodation Variety**: From hostels to luxury hotels, unique stays (cave hotels)
+- ✅ **Transportation**: Walking, public transport, trains, car rentals
+- ✅ **Price Comparisons**: Hotel rates, restaurant costs, activity pricing
+
+### 🔬 **How to Use These Tests**
+
+1. **Copy any prompt** from above
+2. **Paste into Tourgent** ([live demo](https://tourgent-v6-841879234183.us-central1.run.app))
+3. **Evaluate the response** for accuracy, completeness, and usefulness
+4. **Test different aspects**: pricing, logistics, cultural relevance, feasibility
+
+These prompts will thoroughly test all aspects of our multi-agent travel planning system! 🌍✈️
+
+## �🤝 Contributing
 
 1. **Fork the repository**: [https://github.com/ebrrylcn/agentic-era-hack](https://github.com/ebrrylcn/agentic-era-hack)
 2. **Create feature branch**: `git checkout -b feature/amazing-feature`
