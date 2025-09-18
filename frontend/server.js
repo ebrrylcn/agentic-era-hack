@@ -29,45 +29,60 @@ app.get('/api/auth/token', async (req, res) => {
             scopes: ['https://www.googleapis.com/auth/cloud-platform']
         });
 
+        // Get an authorized client
         const client = await auth.getClient();
 
-        // Get the access token properly
-        const accessToken = await client.getAccessToken();
+        // Get access token - returns string directly in some cases
+        const tokenResponse = await client.getAccessToken();
 
-        // accessToken is an object with { token, res }
-        if (accessToken && accessToken.token) {
+        let token;
+
+        // Handle different response formats
+        if (typeof tokenResponse === 'string') {
+            // Direct string token (common in Cloud Run with metadata service)
+            token = tokenResponse;
+        } else if (tokenResponse && typeof tokenResponse === 'object') {
+            // Object with token property
+            token = tokenResponse.token || tokenResponse.access_token;
+        }
+
+        if (token) {
             res.json({
-                accessToken: accessToken.token,
+                accessToken: token,
                 expiresAt: Date.now() + 3600000 // 1 hour
             });
         } else {
-            throw new Error('No token received from Google Auth');
+            throw new Error('Could not extract access token from auth response');
         }
-    } catch (error) {
-        console.error('Google Auth Error:', error.message);
 
-        // Only use fallback for local development (not in production)
+    } catch (error) {
+        console.error('Google Auth Error:', error);
+
+        // Fallback only for local development
         if (process.env.NODE_ENV !== 'production') {
             const fallbackToken = process.env.GOOGLE_ACCESS_TOKEN;
-            if (fallbackToken && !fallbackToken.includes('\n')) {
-                // Clean up the token - remove quotes and trim
-                const cleanToken = fallbackToken.replace(/"/g, '').trim();
-                res.json({
-                    accessToken: cleanToken,
-                    expiresAt: Date.now() + 3600000
-                });
-            } else {
-                res.status(500).json({
-                    error: 'Authentication failed',
-                    details: error.message,
-                    hint: 'For local dev: Set GOOGLE_APPLICATION_CREDENTIALS or fix GOOGLE_ACCESS_TOKEN in .env'
-                });
+            if (fallbackToken) {
+                // Clean the token
+                const cleanToken = fallbackToken.replace(/[\n\r"]/g, '').trim();
+                if (cleanToken) {
+                    res.json({
+                        accessToken: cleanToken,
+                        expiresAt: Date.now() + 3600000
+                    });
+                    return;
+                }
             }
+
+            res.status(500).json({
+                error: 'Authentication failed',
+                details: error.message,
+                hint: 'Set GOOGLE_APPLICATION_CREDENTIALS or GOOGLE_ACCESS_TOKEN'
+            });
         } else {
-            // In production, don't expose detailed errors
+            // Production error
             res.status(500).json({
                 error: 'Authentication service unavailable',
-                message: 'Please check Cloud Run service account permissions'
+                message: 'Check Cloud Run service account permissions for aiplatform.user role'
             });
         }
     }
