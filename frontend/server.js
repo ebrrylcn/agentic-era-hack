@@ -29,34 +29,20 @@ app.get('/api/auth/token', async (req, res) => {
             scopes: ['https://www.googleapis.com/auth/cloud-platform']
         });
 
-        // Get an authorized client
-        const client = await auth.getClient();
-
-        // Get access token - returns string directly in some cases
-        const tokenResponse = await client.getAccessToken();
-
-        let token;
-
-        // Handle different response formats
-        if (typeof tokenResponse === 'string') {
-            // Direct string token (common in Cloud Run with metadata service)
-            token = tokenResponse;
-        } else if (tokenResponse && typeof tokenResponse === 'object') {
-            // Object with token property
-            token = tokenResponse.token || tokenResponse.access_token;
-        }
+        // Use getAccessToken from auth directly - it handles refresh internally
+        const token = await auth.getAccessToken();
 
         if (token) {
             res.json({
                 accessToken: token,
-                expiresAt: Date.now() + 3600000 // 1 hour
+                expiresAt: Date.now() + 3000000 // 50 minutes (tokens expire in ~1 hour)
             });
         } else {
-            throw new Error('Could not extract access token from auth response');
+            throw new Error('Could not obtain access token');
         }
 
     } catch (error) {
-        console.error('Google Auth Error:', error);
+        console.error('Google Auth Error:', error.message);
 
         // Fallback only for local development
         if (process.env.NODE_ENV !== 'production') {
@@ -67,7 +53,7 @@ app.get('/api/auth/token', async (req, res) => {
                 if (cleanToken) {
                     res.json({
                         accessToken: cleanToken,
-                        expiresAt: Date.now() + 3600000
+                        expiresAt: Date.now() + 3000000 // 50 minutes
                     });
                     return;
                 }

@@ -7,6 +7,7 @@
     'use strict';
 
     let tokenRefreshTimer = null;
+    let currentTokenExpiry = null;
 
     /**
      * Fetch access token from server
@@ -29,14 +30,22 @@
                     tokenInput.value = data.accessToken;
                     console.log('Access token loaded successfully');
 
+                    // Store expiry time
+                    currentTokenExpiry = data.expiresAt || (Date.now() + 3000000);
+
                     // Dispatch event to notify token is ready
                     window.dispatchEvent(new CustomEvent('tokenReady', {
                         detail: { token: data.accessToken }
                     }));
                 }
 
-                // Schedule refresh before token expires (50 minutes)
-                scheduleTokenRefresh(50 * 60 * 1000);
+                // Schedule refresh 5 minutes before expiry (tokens last ~1 hour, refresh at 45-50 min)
+                const timeUntilRefresh = Math.max(
+                    currentTokenExpiry - Date.now() - (5 * 60 * 1000), // 5 minutes before expiry
+                    30000 // Minimum 30 seconds
+                );
+
+                scheduleTokenRefresh(timeUntilRefresh);
 
                 return data.accessToken;
             }
@@ -55,6 +64,8 @@
         if (tokenRefreshTimer) {
             clearTimeout(tokenRefreshTimer);
         }
+
+        console.log(`Token refresh scheduled in ${Math.round(delay / 1000)} seconds`);
 
         tokenRefreshTimer = setTimeout(async () => {
             console.log('Refreshing access token...');
@@ -107,12 +118,13 @@
     // Start initialization
     initAuth();
 
-    // Handle page visibility changes (refresh token when page becomes visible)
+    // Handle page visibility changes - refresh token when page becomes visible
     document.addEventListener('visibilitychange', () => {
         if (!document.hidden) {
             // Check if token needs refresh when page becomes visible
-            const tokenInput = document.getElementById('googleAccessToken');
-            if (tokenInput && !tokenInput.value) {
+            if (currentTokenExpiry && Date.now() > currentTokenExpiry - (10 * 60 * 1000)) {
+                // If within 10 minutes of expiry, refresh now
+                console.log('Token near expiry, refreshing...');
                 fetchAccessToken();
             }
         }
