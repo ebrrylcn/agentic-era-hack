@@ -1980,7 +1980,7 @@ class FormManager {
      * Send message to Google VertexAI with streaming
      */
     async sendToGoogleADKStreaming(accessToken, userId, sessionId, message) {
-        const url = 'https://us-central1-aiplatform.googleapis.com/v1/projects/qwiklabs-gcp-03-0d1459a04d94/locations/us-central1/reasoningEngines/8611344282416054272:streamQuery?alt=sse';
+        const url = 'https://us-central1-aiplatform.googleapis.com/v1/projects/qwiklabs-gcp-00-18421b519292/locations/us-central1/reasoningEngines/3396949970106974208:streamQuery?alt=sse';
         const requestBody = {
             "class_method": "async_stream_query",
             "input": {
