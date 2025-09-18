@@ -463,6 +463,14 @@
     animation-delay: -0.16s;
 }
 
+/* Waiting message styling */
+.chat-loading .waiting-message {
+    font-style: italic;
+    color: #1A73E8;
+    font-weight: 500;
+    transition: opacity 0.3s ease-in-out;
+}
+
 /* Chat Options Menu */
 .chat-options-menu {
     position: absolute;

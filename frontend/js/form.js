@@ -143,24 +143,33 @@ class FormManager {
             // Check if this is a single-select container
             const container = chipSet.closest('[data-single-select="true"]');
             if (container) {
-                // Add single selection behavior
-                chipSet.addEventListener('click', (e) => {
-                    const clickedChip = e.target.closest('.mdc-chip');
-                    if (clickedChip && !clickedChip.classList.contains('custom-chip')) {
-                        // Deselect all other chips in this set
-                        chipSet.querySelectorAll('.mdc-chip--selected').forEach(chip => {
-                            if (chip !== clickedChip) {
-                                chip.classList.remove('mdc-chip--selected');
-                            }
+                // For single-select containers, handle selection manually
+                const chips = chipSet.querySelectorAll('.mdc-chip:not(.custom-chip)');
+                chips.forEach(chip => {
+                    chip.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        // Deselect all chips in this set first
+                        chips.forEach(otherChip => {
+                            otherChip.classList.remove('mdc-chip--selected');
                         });
-                        // Toggle the clicked chip
-                        clickedChip.classList.toggle('mdc-chip--selected');
+                        
+                        // Select the clicked chip
+                        chip.classList.add('mdc-chip--selected');
 
                         // Update form data
                         this.updateFormData();
                         this.updateJSONPreview();
                         this.saveFormData();
-                    }
+                    });
+                });
+            } else {
+                // For multi-select chip sets, use MDC's built-in behavior
+                mdcChipSet.listen('MDCChipSet:selection', () => {
+                    this.updateFormData();
+                    this.updateJSONPreview();
+                    this.saveFormData();
                 });
             }
         });
@@ -1265,8 +1274,6 @@ class FormManager {
         
         // Always start from step 1
         this.goToStep(1);
-        
-        console.log('📋 Form initialized with fresh data and reset to step 1');
     }
 
     /**
@@ -1719,12 +1726,12 @@ class FormManager {
 
             // Create session ONCE before retry loop
             try {
-                console.log('🔄 Creating Google ADK session...');
+                console.log('Creating Google ADK session...');
                 sessionId = await this.createGoogleADKSession(accessToken, userId);
-                console.log('✅ Session created:', sessionId);
-                console.log('📌 This session will be used for all attempts');
+                console.log('Session created:', sessionId);
+                console.log('This session will be used for all attempts');
             } catch (error) {
-                console.error('❌ Failed to create session:', error);
+                console.error('Failed to create session:', error);
                 loadingModal.remove();
                 Utils.showNotification('Failed to create Google session. Please check your token.', 'error');
                 return;
@@ -1738,19 +1745,12 @@ class FormManager {
                     // Update loading modal with current attempt
                     this.updateLoadingModal(loadingModal, attempt, MAX_RETRIES);
 
-                    console.log(`\n📍 [Attempt ${attempt}/${MAX_RETRIES}] Using existing session: ${sessionId}`);
-
                     // Format the message with form data and transfer instruction
                     const formDataString = JSON.stringify(this.formData, null, 2);
                     const message = `Here, I share you my trip preferences, I want you to create me a tour according to the information below and DO NOT ASK ANY OTHER QUESTIONS. Just provide me with my trip. Be sure to call every sub-agent possible (e.g., hotels_agent, maps_agent, events_agent, text_search_agent, place_details_agent, etc.)) about getting information. Gather everything as best as you can. Then transfer to the planner_summary_agent. Then ONLY RETURN ME THE JSON THAT IS GENERATED AFTER plan_summary_agent IS CALLED. DO NOT SAY ANYTHING ELSE. MAKE SURE THE JSON IS VALID. \n\nHere is my trip information:\n\n${formDataString}`;
 
-                    console.log(`📤 [Attempt ${attempt}/${MAX_RETRIES}] Sending message to Google ADK...`);
-                    console.log('📝 Message being sent:', message.substring(0, 500) + '...');
 
                     const response = await this.sendToGoogleADK(accessToken, userId, sessionId, message);
-                    console.log(`📥 [Attempt ${attempt}/${MAX_RETRIES}] Received response from Google ADK`);
-                    console.log('🔍 Raw AI Response (first 1000 chars):', response.substring(0, 1000));
-                    console.log('📊 Full AI Response length:', response.length, 'characters');
 
                     // Store the response for display
                     allResponses.push({
@@ -1851,65 +1851,8 @@ class FormManager {
      * Display raw AI response in UI
      */
     displayRawAIResponse(response, attemptNumber) {
-        // Create or update raw response display
-        let responseContainer = document.getElementById('aiResponseDisplay');
-        if (!responseContainer) {
-            responseContainer = document.createElement('div');
-            responseContainer.id = 'aiResponseDisplay';
-            responseContainer.className = 'ai-response-display';
-            responseContainer.innerHTML = `
-                <div class="response-header">
-                    <h3>🤖 AI Responses</h3>
-                    <button id="toggleResponseDisplay" class="mdc-icon-button">
-                        <span class="material-icons">expand_more</span>
-                    </button>
-                </div>
-                <div id="responseContent" class="response-content"></div>
-            `;
-
-            // Insert after the form container
-            const formContainer = document.querySelector('.form-container');
-            if (formContainer) {
-                formContainer.parentNode.insertBefore(responseContainer, formContainer.nextSibling);
-            }
-
-            // Add toggle functionality
-            document.getElementById('toggleResponseDisplay')?.addEventListener('click', () => {
-                const content = document.getElementById('responseContent');
-                const icon = document.querySelector('#toggleResponseDisplay .material-icons');
-                if (content.style.display === 'none') {
-                    content.style.display = 'block';
-                    icon.textContent = 'expand_less';
-                } else {
-                    content.style.display = 'none';
-                    icon.textContent = 'expand_more';
-                }
-            });
-        }
-
-        // Add response to content
-        const responseContent = document.getElementById('responseContent');
-        if (responseContent) {
-            const responseDiv = document.createElement('div');
-            responseDiv.className = 'response-attempt';
-            responseDiv.innerHTML = `
-                <h4>Attempt ${attemptNumber} - ${new Date().toLocaleTimeString()}</h4>
-                <pre class="response-text">${this.formatResponseForDisplay(response)}</pre>
-                <button class="copy-response-btn" data-response="${attemptNumber}">Copy Response</button>
-            `;
-            responseContent.appendChild(responseDiv);
-
-            // Add copy functionality
-            responseDiv.querySelector('.copy-response-btn').addEventListener('click', () => {
-                navigator.clipboard.writeText(response).then(() => {
-                    Utils.showNotification('Response copied to clipboard!', 'success');
-                });
-            });
-
-            // Auto-show the content
-            responseContent.style.display = 'block';
-            document.querySelector('#toggleResponseDisplay .material-icons').textContent = 'expand_less';
-        }
+        // Do nothing - AI responses display has been removed
+        return;
     }
 
     /**

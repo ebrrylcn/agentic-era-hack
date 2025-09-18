@@ -1,175 +1,41 @@
 {
   "hotel_information": {
-    "name": "Grand Hostel Berlin",
-    "place_id": "ChIJMRYLTixQqEcRsCbROOBvqUI",
-    "lat": 52.49843,
-    "lon": 13.3845,
-    "address": "Tempelhofer Ufer 14, 10963 Berlin, Germany",
-    "check_in": "1909-09-20",
+    "name": "Hotel Artemide",
+    "place_id": "ChIJ-XEpPK9hLxMRCnJJKst12y4",
+    "lat": 41.90081860000001,
+    "lon": 12.493654699999999,
+    "address": "Via Nazionale, 22, 00184 Roma RM, Italy",
+    "check_in": "1925-09-19",
     "check_out": "2025-09-22",
     "nights": 3,
     "price_per_night": null,
     "total_price": null,
-    "booking_link": "https://www.grandhostel-berlin.de/"
+    "booking_link": "https://www.hotelartemide.it/?utm_source=GMBlisting&utm_medium=organic"
   },
   "day_plans": [
     {
       "order": 1,
-      "date": "1909-09-20",
-      "places": [
-        {
-          "order": 1,
-          "place_id": "ChIJMRYLTixQqEcRsCbROOBvqUI",
-          "lat": 52.49843,
-          "lon": 13.3845,
-          "name": "Grand Hostel Berlin",
-          "place_type": "hotel",
-          "travel": {
-            "mode": "start",
-            "to_go": null
-          },
-          "time": "~15:00"
-        },
-        {
-          "order": 2,
-          "place_id": "ChIJ678Luardi",
-          "lat": 52.5034,
-          "lon": 13.3321,
-          "name": "Luardi Cucina della mamma",
-          "place_type": "restaurant",
-          "travel": {
-            "mode": "drive",
-            "to_go": "15 min drive"
-          },
-          "time": "~19:00"
-        }
-      ],
-      "summary": "Arrive in Berlin and check into the Grand Hostel Berlin. In the evening, enjoy Italian cuisine at Luardi Cucina della mamma and consider exploring the Berlin Autumn Carnival."
+      "date": "1925-09-19",
+      "places": [],
+      "summary": "Arrival in Rome and check-in at Hotel Artemide. Free time to relax and explore the immediate surroundings."
     },
     {
       "order": 2,
       "date": "2025-09-20",
-      "places": [
-        {
-          "order": 1,
-          "place_id": "ChIJ123Pergamon",
-          "lat": 52.5228,
-          "lon": 13.397,
-          "name": "Pergamon Museum",
-          "place_type": "museum",
-          "travel": {
-            "mode": "drive",
-            "to_go": "20 min drive"
-          },
-          "time": "10:00"
-        },
-        {
-          "order": 2,
-          "place_id": "ChIJ456Waldbuhne",
-          "lat": 52.511,
-          "lon": 13.238,
-          "name": "Waldbühne Berlin",
-          "place_type": "event",
-          "travel": {
-            "mode": "transit",
-            "to_go": "45 min transit"
-          },
-          "time": "~18:00"
-        },
-        {
-          "order": 3,
-          "place_id": "ChIJ234CantinaMex",
-          "lat": 52.5255,
-          "lon": 13.3894,
-          "name": "Cantina Mexicana Que Pasa",
-          "place_type": "restaurant",
-          "travel": {
-            "mode": "drive",
-            "to_go": "30 min drive"
-          },
-          "time": "~21:30"
-        }
-      ],
-      "summary": "Start your day with art and history at the Pergamon Museum. In the evening, experience the unique Berliner Taschenlampenkonzert at Waldbühne, followed by Mexican dinner at Cantina Mexicana Que Pasa and explore Berlin's vibrant nightlife."
+      "places": [],
+      "summary": "Full day to explore Rome, focusing on iconic landmarks, museums, or art galleries as per your preference."
     },
     {
       "order": 3,
       "date": "2025-09-21",
-      "places": [
-        {
-          "order": 1,
-          "place_id": "ChIJ789Berlinische",
-          "lat": 52.5028,
-          "lon": 13.3917,
-          "name": "Berlinische Galerie",
-          "place_type": "museum",
-          "travel": {
-            "mode": "drive",
-            "to_go": "10 min drive"
-          },
-          "time": "11:00"
-        },
-        {
-          "order": 2,
-          "place_id": "ChIJ012Tiergarten",
-          "lat": 52.5144,
-          "lon": 13.3501,
-          "name": "Tiergarten",
-          "place_type": "park",
-          "travel": {
-            "mode": "walk",
-            "to_go": "20 min walk"
-          },
-          "time": "~14:00"
-        },
-        {
-          "order": 3,
-          "place_id": "ChIJ567LetzteInstanz",
-          "lat": 52.5152,
-          "lon": 13.4116,
-          "name": "Zur Letzten Instanz",
-          "place_type": "restaurant",
-          "travel": {
-            "mode": "drive",
-            "to_go": "15 min drive"
-          },
-          "time": "~19:00"
-        },
-        {
-          "order": 4,
-          "place_id": "ChIJ345Klunkerkranich",
-          "lat": 52.4839,
-          "lon": 13.4357,
-          "name": "Klunkerkranich",
-          "place_type": "other",
-          "travel": {
-            "mode": "transit",
-            "to_go": "30 min transit"
-          },
-          "time": "~21:00"
-        }
-      ],
-      "summary": "Explore modern art at the Berlinische Galerie. Spend a relaxed afternoon in Tiergarten, avoiding the marathon crowds. Enjoy a local German dinner at Zur Letzten Instanz, then unwind at the rooftop bar Klunkerkranich."
+      "places": [],
+      "summary": "Another day dedicated to experiencing Rome's rich culture, perhaps visiting more museums or attending a concert."
     },
     {
       "order": 4,
       "date": "2025-09-22",
-      "places": [
-        {
-          "order": 1,
-          "place_id": "ChIJ901RiceShine",
-          "lat": 52.5298,
-          "lon": 13.4012,
-          "name": "Rice and Shine Berlin",
-          "place_type": "restaurant",
-          "travel": {
-            "mode": "drive",
-            "to_go": "20 min drive"
-          },
-          "time": "~09:30"
-        }
-      ],
-      "summary": "Enjoy a final breakfast with Asian flavors at Rice and Shine Berlin before heading to the airport for your departure."
+      "places": [],
+      "summary": "Enjoy a final Roman breakfast before check-out and departure from the city."
     }
   ]
 }

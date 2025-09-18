@@ -11,6 +11,7 @@ class ChatManager {
         this.resizeStartWidth = 0;
         this.conversation = [];
         this.settings = Storage.chat.getChatSettings();
+        this.messageRotationInterval = null; // For rotating waiting messages
 
         this.init();
     }
@@ -441,10 +442,9 @@ class ChatManager {
             Storage.chat.setGoogleSessionId(sessionId);
         }
 
-        // Create streaming message element
-        const messagesContainer = document.getElementById('chatMessages');
-        const contentElement = StreamHandler.createStreamingMessage(messagesContainer);
-        this.hideTypingIndicator();
+        // Wait at least 2 seconds to show the waiting messages before hiding typing indicator
+        const minimumWaitTime = 2000; // 2 seconds
+        const startTime = Date.now();
 
         // Send message and stream response
         const url = 'https://us-central1-aiplatform.googleapis.com/v1/projects/qwiklabs-gcp-03-0d1459a04d94/locations/us-central1/reasoningEngines/8611344282416054272:streamQuery?alt=sse';
@@ -458,22 +458,40 @@ class ChatManager {
         };
 
         let accumulatedText = '';
+        let contentElement = null;
+        let streamingStarted = false;
 
         await StreamHandler.streamVertexAI(
             url,
             requestBody,
             accessToken,
             // onChunk callback
-            (chunk, fullText) => {
+            async (chunk, fullText) => {
+                // Only start streaming UI after minimum wait time
+                if (!streamingStarted) {
+                    const elapsedTime = Date.now() - startTime;
+                    if (elapsedTime < minimumWaitTime) {
+                        await new Promise(resolve => setTimeout(resolve, minimumWaitTime - elapsedTime));
+                    }
+                    
+                    // Now create streaming message element and hide typing indicator
+                    const messagesContainer = document.getElementById('chatMessages');
+                    contentElement = StreamHandler.createStreamingMessage(messagesContainer);
+                    this.hideTypingIndicator();
+                    streamingStarted = true;
+                }
+
                 accumulatedText = fullText;
                 // Only update UI if we have actual content (not empty from agent transfers)
-                if (fullText.trim()) {
+                if (fullText.trim() && contentElement) {
                     StreamHandler.updateStreamingMessage(contentElement, fullText);
                 }
             },
             // onComplete callback
             (fullText) => {
-                StreamHandler.finalizeStreamingMessage(contentElement);
+                if (contentElement) {
+                    StreamHandler.finalizeStreamingMessage(contentElement);
+                }
                 this.scrollToBottom();
 
                 // Save message to conversation history
@@ -662,18 +680,31 @@ class ChatManager {
     }
 
     /**
-     * Show typing indicator
+     * Show typing indicator with fun rotating messages
      */
     showTypingIndicator() {
         const messagesContainer = document.getElementById('chatMessages');
         if (!messagesContainer) return;
+
+        // Fun waiting messages
+        const waitingMessages = [
+            "Dusting off my crystal ball to see what you'd love...",
+            "Peeking into the comfiest pillows and coziest beds for you...",
+            "Sneaking backstage to find the hottest tickets...",
+            "Sharpening my tourist binoculars to spot the must-sees...",
+            "Calculating dessert calories (spoiler: they don't count on vacation)...",
+            "Brewing the perfect Turkish coffee algorithm..."
+        ];
+
+        // Get a random message
+        const randomMessage = waitingMessages[Math.floor(Math.random() * waitingMessages.length)];
 
         const typingElement = document.createElement('div');
         typingElement.className = 'bot-message typing-indicator';
         typingElement.innerHTML = `
             <div class="message-bubble">
                 <div class="chat-loading">
-                    <span>Assistant is typing</span>
+                    <span class="waiting-message">${randomMessage}</span>
                     <div class="loading-dots">
                         <div class="loading-dot"></div>
                         <div class="loading-dot"></div>
@@ -685,12 +716,51 @@ class ChatManager {
 
         messagesContainer.appendChild(typingElement);
         this.scrollToBottom();
+
+        // Start rotating messages every 3 seconds
+        this.startMessageRotation(waitingMessages);
+    }
+
+    /**
+     * Start rotating waiting messages
+     */
+    startMessageRotation(messages) {
+        // Clear any existing rotation
+        if (this.messageRotationInterval) {
+            clearInterval(this.messageRotationInterval);
+        }
+
+        let currentIndex = 0;
+        this.messageRotationInterval = setInterval(() => {
+            const waitingMessageElement = document.querySelector('.typing-indicator .waiting-message');
+            if (waitingMessageElement) {
+                // Move to next message
+                currentIndex = (currentIndex + 1) % messages.length;
+                waitingMessageElement.textContent = messages[currentIndex];
+            } else {
+                // Stop rotation if typing indicator is gone
+                this.stopMessageRotation();
+            }
+        }, 3000); // Change message every 3 seconds
+    }
+
+    /**
+     * Stop message rotation
+     */
+    stopMessageRotation() {
+        if (this.messageRotationInterval) {
+            clearInterval(this.messageRotationInterval);
+            this.messageRotationInterval = null;
+        }
     }
 
     /**
      * Hide typing indicator
      */
     hideTypingIndicator() {
+        // Stop message rotation
+        this.stopMessageRotation();
+        
         const typingIndicator = document.querySelector('.typing-indicator');
         if (typingIndicator) {
             typingIndicator.remove();

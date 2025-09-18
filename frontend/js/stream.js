@@ -311,7 +311,6 @@ class StreamHandler {
         messageElement.innerHTML = `
             <div class="message-bubble">
                 <div class="message-content"></div>
-                <span class="streaming-cursor">▊</span>
             </div>
             <span class="message-time">${Utils.formatTimestamp(Date.now())}</span>
         `;
@@ -337,14 +336,9 @@ class StreamHandler {
     }
 
     /**
-     * Finalize streaming message (remove cursor, etc.)
+     * Finalize streaming message (remove streaming class)
      */
     static finalizeStreamingMessage(messageElement) {
-        const cursor = messageElement.querySelector('.streaming-cursor');
-        if (cursor) {
-            cursor.remove();
-        }
-
         const streamingMsg = messageElement.closest('.streaming-message');
         if (streamingMsg) {
             streamingMsg.classList.remove('streaming-message');
