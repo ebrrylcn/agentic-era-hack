@@ -10,6 +10,7 @@ require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 const express = require('express');
 const fs = require('fs');
 const cors = require('cors');
+const { GoogleAuth } = require('google-auth-library');
 
 const app = express();
 const PORT = process.env.PORT || 8002;
@@ -19,6 +20,40 @@ app.use(cors());
 
 // Add JSON body parser
 app.use(express.json());
+
+// API endpoint to get Google Cloud access token
+app.get('/api/auth/token', async (req, res) => {
+    try {
+        // Use Google Auth Library to get access token
+        const auth = new GoogleAuth({
+            scopes: ['https://www.googleapis.com/auth/cloud-platform']
+        });
+
+        const client = await auth.getClient();
+        const tokenResponse = await client.getAccessToken();
+
+        res.json({
+            accessToken: tokenResponse.token,
+            expiresAt: tokenResponse.res?.data?.expiry_date || Date.now() + 3600000
+        });
+    } catch (error) {
+        console.warn('Could not get token from Google Auth:', error.message);
+
+        // Fallback for local development
+        const fallbackToken = process.env.GOOGLE_ACCESS_TOKEN || '';
+        if (fallbackToken) {
+            res.json({
+                accessToken: fallbackToken,
+                expiresAt: Date.now() + 3600000
+            });
+        } else {
+            res.status(500).json({
+                error: 'Could not obtain access token',
+                details: 'Set GOOGLE_APPLICATION_CREDENTIALS or GOOGLE_ACCESS_TOKEN env variable'
+            });
+        }
+    }
+});
 
 // API endpoint to get configuration (supports both .env and Cloud Run secrets)
 app.get('/api/config', (req, res) => {

@@ -1,41 +1,31 @@
 {
-  "city": "Rome",
-  "country": "Italy",
+  "city": "",
+  "country": "",
   "date": {
-    "start_date": "19.09.2025",
-    "end_date": "2025-09-22",
-    "number_of_days": 3
+    "start_date": "",
+    "end_date": "",
+    "number_of_days": null
   },
   "people": {
-    "number_of_people": 2,
+    "number_of_people": null,
     "people_details": null
   },
   "preferences": {
-    "events": [
-      "Museums",
-      "Concerts",
-      "Art Galleries"
-    ],
-    "cousines": [
-      "Italian",
-      "Asian",
-      "Mexican"
-    ],
+    "events": null,
+    "cousines": null,
     "places": null,
-    "budget_amount": 500,
-    "currency": "EUR",
+    "budget_amount": 250,
+    "currency": null,
     "general_notes": null
   },
   "dislikes": {
-    "events": [
-      "Crowded Places"
-    ],
+    "events": null,
     "cousines": null,
     "places": null,
     "general_note": null
   },
   "hotel": {
-    "hotel_type": "luxury",
+    "hotel_type": null,
     "location_preference": null,
     "budget_per_night": null,
     "amenities": null,

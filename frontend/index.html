@@ -17,6 +17,14 @@
     <link rel="stylesheet" href="css/material.css">
     <link rel="stylesheet" href="css/form.css">
     <link rel="stylesheet" href="css/chat.css">
+
+    <!-- Hide access token input on Cloud Run -->
+    <style>
+        /* Auto-hide token input when running on Cloud Run */
+        .access-token-container {
+            display: none !important;
+        }
+    </style>
 </head>
 <body>
     <!-- Main Content -->
@@ -805,6 +813,7 @@
     <script src="js/stream.js"></script>
     <script src="js/form.js"></script>
     <script src="js/chat.js"></script>
+    <script src="js/auth-helper.js"></script>
     <script src="js/main.js"></script>
     
     <!-- Debug Helper Script -->
