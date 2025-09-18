@@ -102,6 +102,7 @@ class FormManager {
         this.setupCityAutocomplete();
         this.setupDatePickers();
         this.setupBudgetSlider();
+        this.setupTokenField();
 
         this.updateProgressIndicator();
         this.updateStepIndicators(); // Initialize step indicators
@@ -397,10 +398,15 @@ class FormManager {
                     hideSuggestions();
                     cityInput.dispatchEvent(new Event('input'));
 
-                    // Save form when city is selected
+                    // Save form when city is selected (use arrow function to preserve 'this' context)
                     setTimeout(() => {
-                        this.saveFormData().then(() => {
-                        });
+                        if (window.formManager) {
+                            window.formManager.saveFormData().then(() => {
+                                console.log('Form data saved after city selection');
+                            }).catch(error => {
+                                console.error('Error saving form data:', error);
+                            });
+                        }
                     }, 100);
                 });
 
@@ -1592,94 +1598,691 @@ class FormManager {
     }
 
     /**
-     * Generate travel plan using ADK agent with validation and retry
+     * Generate travel plan using Google ADK agent with retry logic
      */
     async generatePlan() {
-        const maxRetries = 3;
-        let currentAttempt = 0;
-        
+        const MAX_RETRIES = 3;
+        let attempt = 0;
+        let allResponses = [];
+
         try {
-            // Show loading modal
-            const loadingModal = this.showLoadingModal();
-            
-            // Send to ADK agent via ChatManager if available
-            if (!window.chatManager) {
-                console.error('❌ ChatManager not available');
-                loadingModal.remove();
-                Utils.showNotification('Chat system not initialized. Please refresh the page.', 'error');
+            // Get access token
+            const accessToken = this.getAccessToken();
+            if (!accessToken) {
+                Utils.showNotification('Please enter your Google Cloud access token first', 'error');
+                document.getElementById('googleAccessToken')?.focus();
                 return;
             }
 
-            while (currentAttempt < maxRetries) {
-                currentAttempt++;
-                
+            // Show loading modal
+            const loadingModal = this.showLoadingModal();
+            const userId = "1";
+            let sessionId = null;
+            let lastError = null;
+
+            // Create session ONCE before retry loop
+            try {
+                console.log('🔄 Creating Google ADK session...');
+                sessionId = await this.createGoogleADKSession(accessToken, userId);
+                console.log('✅ Session created:', sessionId);
+                console.log('📌 This session will be used for all attempts');
+            } catch (error) {
+                console.error('❌ Failed to create session:', error);
+                loadingModal.remove();
+                Utils.showNotification('Failed to create Google session. Please check your token.', 'error');
+                return;
+            }
+
+            // Retry loop using the SAME session
+            while (attempt < MAX_RETRIES) {
+                attempt++;
+
                 try {
                     // Update loading modal with current attempt
-                    this.updateLoadingModal(loadingModal, currentAttempt, maxRetries);
-                    
-                    // Format prompt with form data
-                    const promptMessage = this.formatPromptWithFormData(currentAttempt);
-                    
-                    console.log(`🎯 Sending to Tourgent Agent (Attempt ${currentAttempt}/${maxRetries}):`);
-                    console.log('📝 Prompt:', promptMessage);
-                    
-                    const response = await window.chatManager.sendToADKAgent(promptMessage);
-                    
-                    console.log(`🤖 Tourgent Agent Response (Attempt ${currentAttempt}):`);
-                    console.log(response);
-                    
-                    // Validate the response format
-                    const validationResult = this.validateAgentResponse(response);
-                    
-                    if (validationResult.valid) {
-                        console.log('✅ Response format is valid!');
-                        
+                    this.updateLoadingModal(loadingModal, attempt, MAX_RETRIES);
+
+                    console.log(`\n📍 [Attempt ${attempt}/${MAX_RETRIES}] Using existing session: ${sessionId}`);
+
+                    // Format the message with form data and transfer instruction
+                    const formDataString = JSON.stringify(this.formData, null, 2);
+                    const message = `Bana başka soru sorma, planımı güzelce oluştur. Tüm sub-agent'ları çağır (hotels_agent, maps_agent, events_agent) ve bilgileri topla. SON AŞAMADA planner_summary_agent'a transfer et ve onun ürettiği KOMPLE JSON ÇIKTISINI DÖNDÜR. JSON çıktısında hotel_information ve day_plans olmalı.\n\nÖNEMLİ: planner_summary_agent'ın döndürdüğü JSON'u AYNEN VER,\n\n${formDataString}`;
+
+                    console.log(`📤 [Attempt ${attempt}/${MAX_RETRIES}] Sending message to Google ADK...`);
+                    console.log('📝 Message being sent:', message.substring(0, 500) + '...');
+
+                    const response = await this.sendToGoogleADK(accessToken, userId, sessionId, message);
+                    console.log(`📥 [Attempt ${attempt}/${MAX_RETRIES}] Received response from Google ADK`);
+                    console.log('🔍 Raw AI Response (first 1000 chars):', response.substring(0, 1000));
+                    console.log('📊 Full AI Response length:', response.length, 'characters');
+
+                    // Store the response for display
+                    allResponses.push({
+                        attempt: attempt,
+                        response: response,
+                        timestamp: new Date().toISOString()
+                    });
+
+                    // Show raw response in UI
+                    this.displayRawAIResponse(response, attempt);
+
+                    // Try to parse and validate the response
+                    const jsonResponse = this.extractJSONFromResponse(response);
+
+                    if (jsonResponse) {
+                        console.log(`✅ [Attempt ${attempt}/${MAX_RETRIES}] Valid JSON response received!`);
+
                         // Hide loading modal
                         loadingModal.remove();
-                        
+
                         // Save response to output.json
-                        await this.saveResponseToFile(response);
-                        
-                        // Display the response on the website
-                        this.displayAgentResponse(response);
-                        return;
-                        
+                        await this.saveResponseToFile(JSON.stringify(jsonResponse));
+
+                        // Display the response
+                        this.displayAgentResponse(JSON.stringify(jsonResponse, null, 2));
+
+                        // Delete the session
+                        await this.deleteGoogleADKSession(accessToken, userId, sessionId);
+
+                        return; // Success!
                     } else {
-                        console.warn(`⚠️ Response format invalid (Attempt ${currentAttempt}): ${validationResult.error}`);
-                        
-                        if (currentAttempt < maxRetries) {
-                            console.log(`🔄 Retrying... (${currentAttempt + 1}/${maxRetries})`);
-                            // Add a small delay between retries
-                            await new Promise(resolve => setTimeout(resolve, 1000));
+                        console.warn(`⚠️ [Attempt ${attempt}/${MAX_RETRIES}] Failed to extract valid JSON from response`);
+                        lastError = new Error('Failed to extract valid JSON from response');
+
+                        // DON'T delete session - keep using the same one
+                        console.log('📌 Keeping the same session for next attempt');
+
+                        // If not the last attempt, wait before retrying
+                        if (attempt < MAX_RETRIES) {
+                            console.log(`⏳ Waiting 2 seconds before retry with same session...`);
+                            await new Promise(resolve => setTimeout(resolve, 2000));
                         }
                     }
-                    
-                } catch (attemptError) {
-                    console.error(`❌ Error in attempt ${currentAttempt}:`, attemptError);
-                    
-                    if (currentAttempt < maxRetries) {
-                        console.log(`🔄 Retrying due to error... (${currentAttempt + 1}/${maxRetries})`);
-                        await new Promise(resolve => setTimeout(resolve, 1000));
+
+                } catch (error) {
+                    console.error(`❌ [Attempt ${attempt}/${MAX_RETRIES}] Error during plan generation:`, error);
+                    lastError = error;
+
+                    // DON'T delete session on error - keep using it
+                    console.log('📌 Keeping session despite error for potential retry');
+
+                    // If not the last attempt, wait before retrying
+                    if (attempt < MAX_RETRIES) {
+                        console.log(`⏳ Waiting 2 seconds before retry...`);
+                        await new Promise(resolve => setTimeout(resolve, 2000));
                     }
                 }
             }
-            
+
             // All attempts failed
             loadingModal.remove();
-            Utils.showNotification(
-                `Failed to get properly formatted response after ${maxRetries} attempts. Please try again.`, 
-                'error', 
-                8000
-            );
-            
-        } catch (error) {
-            console.error('❌ Error in generatePlan:', error);
-            // Hide loading modal if it exists
-            const existingModal = document.querySelector('.loading-modal-overlay');
-            if (existingModal) {
-                existingModal.remove();
+
+            // Clean up session after all attempts
+            if (sessionId) {
+                console.log('🧹 Cleaning up session after all attempts...');
+                try {
+                    await this.deleteGoogleADKSession(accessToken, userId, sessionId);
+                    console.log('✅ Session cleaned up');
+                } catch (deleteError) {
+                    console.warn('Failed to delete session:', deleteError);
+                }
             }
-            Utils.showNotification('Failed to generate travel plan. Please try again.', 'error');
+
+            // Show all responses for debugging
+            this.showAllResponses(allResponses);
+
+            const errorMessage = `Failed after ${MAX_RETRIES} attempts. ${lastError?.message || 'Unknown error'}`;
+            console.error('❌ All attempts exhausted:', errorMessage);
+            Utils.showNotification(errorMessage, 'error', 10000);
+
+        } catch (error) {
+            console.error('❌ Fatal error in generatePlan:', error);
+
+            // Clean up session if it exists
+            if (sessionId) {
+                try {
+                    await this.deleteGoogleADKSession(accessToken, userId, sessionId);
+                } catch (deleteError) {
+                    console.warn('Failed to delete session:', deleteError);
+                }
+            }
+
+            Utils.showNotification(error.message || 'Failed to generate travel plan. Please try again.', 'error');
+        }
+    }
+
+    /**
+     * Display raw AI response in UI
+     */
+    displayRawAIResponse(response, attemptNumber) {
+        // Create or update raw response display
+        let responseContainer = document.getElementById('aiResponseDisplay');
+        if (!responseContainer) {
+            responseContainer = document.createElement('div');
+            responseContainer.id = 'aiResponseDisplay';
+            responseContainer.className = 'ai-response-display';
+            responseContainer.innerHTML = `
+                <div class="response-header">
+                    <h3>🤖 AI Responses</h3>
+                    <button id="toggleResponseDisplay" class="mdc-icon-button">
+                        <span class="material-icons">expand_more</span>
+                    </button>
+                </div>
+                <div id="responseContent" class="response-content"></div>
+            `;
+
+            // Insert after the form container
+            const formContainer = document.querySelector('.form-container');
+            if (formContainer) {
+                formContainer.parentNode.insertBefore(responseContainer, formContainer.nextSibling);
+            }
+
+            // Add toggle functionality
+            document.getElementById('toggleResponseDisplay')?.addEventListener('click', () => {
+                const content = document.getElementById('responseContent');
+                const icon = document.querySelector('#toggleResponseDisplay .material-icons');
+                if (content.style.display === 'none') {
+                    content.style.display = 'block';
+                    icon.textContent = 'expand_less';
+                } else {
+                    content.style.display = 'none';
+                    icon.textContent = 'expand_more';
+                }
+            });
+        }
+
+        // Add response to content
+        const responseContent = document.getElementById('responseContent');
+        if (responseContent) {
+            const responseDiv = document.createElement('div');
+            responseDiv.className = 'response-attempt';
+            responseDiv.innerHTML = `
+                <h4>Attempt ${attemptNumber} - ${new Date().toLocaleTimeString()}</h4>
+                <pre class="response-text">${this.formatResponseForDisplay(response)}</pre>
+                <button class="copy-response-btn" data-response="${attemptNumber}">Copy Response</button>
+            `;
+            responseContent.appendChild(responseDiv);
+
+            // Add copy functionality
+            responseDiv.querySelector('.copy-response-btn').addEventListener('click', () => {
+                navigator.clipboard.writeText(response).then(() => {
+                    Utils.showNotification('Response copied to clipboard!', 'success');
+                });
+            });
+
+            // Auto-show the content
+            responseContent.style.display = 'block';
+            document.querySelector('#toggleResponseDisplay .material-icons').textContent = 'expand_less';
+        }
+    }
+
+    /**
+     * Format response for display (extract meaningful content)
+     */
+    formatResponseForDisplay(response) {
+        try {
+            const lines = response.split('\n');
+            let formattedText = '';
+
+            for (const line of lines) {
+                if (line.startsWith('data: ')) {
+                    try {
+                        const data = JSON.parse(line.substring(6));
+                        if (data.content && data.content.parts) {
+                            for (const part of data.content.parts) {
+                                if (part.text) {
+                                    formattedText += part.text + '\n';
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        // Skip invalid JSON lines
+                    }
+                }
+            }
+
+            return formattedText || response.substring(0, 2000) + '...';
+        } catch (error) {
+            return response.substring(0, 2000) + '...';
+        }
+    }
+
+    /**
+     * Show all responses after failures
+     */
+    showAllResponses(allResponses) {
+        if (allResponses.length === 0) return;
+
+        console.log('📋 All AI responses collected:');
+        allResponses.forEach(r => {
+            console.log(`Attempt ${r.attempt} at ${r.timestamp}:`);
+            console.log(r.response.substring(0, 500));
+        });
+    }
+
+    /**
+     * Get Google Cloud access token from input field
+     */
+    getAccessToken() {
+        const tokenInput = document.getElementById('googleAccessToken');
+        if (tokenInput) {
+            const token = tokenInput.value.trim();
+            if (token) {
+                // Store in session storage for convenience
+                sessionStorage.setItem('google_access_token', token);
+                return token;
+            }
+        }
+        // Try to get from session storage
+        return sessionStorage.getItem('google_access_token');
+    }
+
+    /**
+     * Create a new Google ADK session
+     */
+    async createGoogleADKSession(accessToken, userId) {
+        const response = await fetch('https://us-central1-aiplatform.googleapis.com/v1/projects/qwiklabs-gcp-03-0d1459a04d94/locations/us-central1/reasoningEngines/8611344282416054272:query', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "class_method": "async_create_session",
+                "input": {
+                    "user_id": userId
+                }
+            })
+        });
+
+        if (!response.ok) {
+            const error = await response.text();
+            throw new Error(`Failed to create session: ${error}`);
+        }
+
+        const data = await response.json();
+        return data.output.id;
+    }
+
+    /**
+     * Send message to Google VertexAI with streaming (with fallback to non-streaming)
+     */
+    async sendToGoogleADK(accessToken, userId, sessionId, message) {
+        // First try streaming endpoint
+        try {
+            console.log('🌊 Trying streaming endpoint...');
+            const streamingResult = await this.sendToGoogleADKStreaming(accessToken, userId, sessionId, message);
+
+            // Check if we got actual content
+            if (streamingResult && streamingResult.trim()) {
+                console.log('✅ Streaming successful, got content');
+                return streamingResult;
+            } else {
+                console.log('⚠️ Streaming returned empty, falling back to non-streaming...');
+                throw new Error('Empty streaming response');
+            }
+        } catch (streamError) {
+            console.warn('⚠️ Streaming failed:', streamError.message);
+            console.log('🔄 Falling back to non-streaming endpoint...');
+
+            // Fallback to non-streaming endpoint
+            try {
+                const nonStreamingResult = await this.sendToGoogleADKNonStreaming(accessToken, userId, sessionId, message);
+                console.log('✅ Non-streaming endpoint successful');
+                return nonStreamingResult;
+            } catch (nonStreamError) {
+                console.error('❌ Both endpoints failed');
+                throw nonStreamError;
+            }
+        }
+    }
+
+    /**
+     * Send message to Google VertexAI with streaming
+     */
+    async sendToGoogleADKStreaming(accessToken, userId, sessionId, message) {
+        const url = 'https://us-central1-aiplatform.googleapis.com/v1/projects/qwiklabs-gcp-03-0d1459a04d94/locations/us-central1/reasoningEngines/8611344282416054272:streamQuery?alt=sse';
+        const requestBody = {
+            "class_method": "async_stream_query",
+            "input": {
+                "user_id": userId,
+                "session_id": sessionId,
+                "message": message
+            }
+        };
+
+        return new Promise((resolve, reject) => {
+            let accumulatedText = '';
+
+            // Show streaming progress in the loading modal
+            const progressElement = document.querySelector('.loading-details');
+            if (progressElement) {
+                progressElement.innerHTML = '<div class="stream-progress"></div>';
+            }
+            const streamProgressElement = document.querySelector('.stream-progress');
+
+            StreamHandler.streamVertexAI(
+                url,
+                requestBody,
+                accessToken,
+                // onChunk callback - show streaming progress
+                (chunk, fullText) => {
+                    accumulatedText = fullText;
+
+                    // Update progress display with streaming content
+                    if (streamProgressElement) {
+                        // Show last 500 characters of the stream
+                        const displayText = fullText.length > 500
+                            ? '...' + fullText.substring(fullText.length - 500)
+                            : fullText;
+                        streamProgressElement.innerHTML = `
+                            <div style="text-align: left; max-height: 200px; overflow-y: auto; padding: 10px; background: #f5f5f5; border-radius: 4px; font-size: 12px; font-family: monospace;">
+                                ${displayText.replace(/\n/g, '<br>')}
+                            </div>
+                        `;
+                    }
+                },
+                // onComplete callback
+                (fullText) => {
+                    resolve(fullText);
+                },
+                // onError callback
+                (error) => {
+                    reject(error);
+                }
+            );
+        });
+    }
+
+    /**
+     * Send message to Google VertexAI without streaming (fallback)
+     */
+    async sendToGoogleADKNonStreaming(accessToken, userId, sessionId, message) {
+        const url = 'https://us-central1-aiplatform.googleapis.com/v1/projects/qwiklabs-gcp-03-0d1459a04d94/locations/us-central1/reasoningEngines/8611344282416054272:query';
+        const requestBody = {
+            "class_method": "async_query",  // Using async_query instead of async_stream_query
+            "input": {
+                "user_id": userId,
+                "session_id": sessionId,
+                "message": message
+            }
+        };
+
+        console.log('📤 Sending non-streaming request to:', url);
+        console.log('📦 Request body:', JSON.stringify(requestBody, null, 2));
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        console.log('📡 Non-streaming response status:', response.status);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('❌ Non-streaming request failed:', errorText);
+            throw new Error(`Non-streaming request failed: ${errorText}`);
+        }
+
+        const responseData = await response.json();
+        console.log('📥 Non-streaming response:', JSON.stringify(responseData, null, 2).substring(0, 1000));
+
+        // Extract text from the response
+        if (responseData.output) {
+            // The output might be a string or an object
+            if (typeof responseData.output === 'string') {
+                return responseData.output;
+            } else if (responseData.output.text) {
+                return responseData.output.text;
+            } else if (responseData.output.content) {
+                return JSON.stringify(responseData.output.content);
+            } else {
+                // Return the whole output as JSON string
+                return JSON.stringify(responseData.output);
+            }
+        }
+
+        // Fallback to returning the whole response
+        return JSON.stringify(responseData);
+    }
+
+    /**
+     * Delete Google ADK session
+     */
+    async deleteGoogleADKSession(accessToken, userId, sessionId) {
+        try {
+            const response = await fetch('https://us-central1-aiplatform.googleapis.com/v1/projects/qwiklabs-gcp-03-0d1459a04d94/locations/us-central1/reasoningEngines/8611344282416054272:query', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "class_method": "async_delete_session",
+                    "input": {
+                        "user_id": userId,
+                        "session_id": sessionId
+                    }
+                })
+            });
+
+            if (response.ok) {
+                console.log('✅ Session deleted successfully');
+            }
+        } catch (error) {
+            console.warn('Failed to delete session:', error);
+        }
+    }
+
+    /**
+     * Extract JSON from response (handles both direct JSON and SSE format)
+     */
+    extractJSONFromResponse(responseText) {
+        console.log('🔍 Starting JSON extraction from response...');
+        console.log('📝 Response preview:', responseText.substring(0, 200));
+
+        try {
+            // Method 1: Try to parse directly as JSON (most common case now)
+            try {
+                const directParse = JSON.parse(responseText);
+                if (directParse.hotel_information && directParse.day_plans) {
+                    console.log('✅ Direct JSON parse successful!');
+                    return directParse;
+                }
+            } catch (e) {
+                console.log('📋 Not direct JSON, trying other methods...');
+            }
+
+            // Method 2: Extract from markdown code blocks (```json ... ```)
+            const markdownMatch = responseText.match(/```json\s*([\s\S]*?)\s*```/);
+            if (markdownMatch) {
+                try {
+                    const jsonFromMarkdown = JSON.parse(markdownMatch[1]);
+                    if (jsonFromMarkdown.hotel_information && jsonFromMarkdown.day_plans) {
+                        console.log('✅ Extracted JSON from markdown code block!');
+                        return jsonFromMarkdown;
+                    }
+                } catch (e) {
+                    console.log('⚠️ Failed to parse JSON from markdown block');
+                }
+            }
+
+            // Method 3: Try to find JSON object in the text
+            const jsonMatch = responseText.match(/\{[\s\S]*"hotel_information"[\s\S]*"day_plans"[\s\S]*\}/);
+            if (jsonMatch) {
+                try {
+                    const extractedJson = JSON.parse(jsonMatch[0]);
+                    if (extractedJson.hotel_information && extractedJson.day_plans) {
+                        console.log('✅ Extracted JSON using pattern matching!');
+                        return extractedJson;
+                    }
+                } catch (e) {
+                    console.log('⚠️ Failed to parse extracted JSON pattern');
+                }
+            }
+
+            // Method 4: Fallback to SSE format parsing (for backward compatibility)
+            console.log('🔄 Trying SSE format parsing as fallback...');
+            // Split by lines and look for data lines
+            const lines = responseText.split('\n');
+            console.log(`📋 Total lines in response: ${lines.length}`);
+
+            let allTextContent = '';
+            let dataLinesFound = 0;
+            let lastAuthor = null;
+            let authors = [];
+            let functionResponseCount = 0;
+            let thoughtMessageCount = 0;
+
+            // First, collect all text content from data lines
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                if (line.startsWith('data: ')) {
+                    dataLinesFound++;
+                    try {
+                        const dataStr = line.substring(6);
+                        console.log(`📝 Data line ${dataLinesFound}: ${dataStr.substring(0, 100)}...`);
+
+                        const data = JSON.parse(dataStr);
+
+                        // Check for author field
+                        if (data.author) {
+                            lastAuthor = data.author;
+                            authors.push(data.author);
+                            console.log(`👤 Found author: ${data.author}`);
+                        }
+
+                        // Check if this contains content
+                        if (data.content && data.content.parts) {
+                            for (const part of data.content.parts) {
+                                // Skip function_response messages (agent transfers)
+                                if (part.function_response) {
+                                    functionResponseCount++;
+                                    console.log(`⏭️ Skipping function_response #${functionResponseCount} (agent transfer: ${part.function_response.name})`);
+                                    continue;
+                                }
+
+                                // Skip thought messages (internal agent reasoning)
+                                if (part.thought) {
+                                    thoughtMessageCount++;
+                                    console.log(`💭 Skipping thought message #${thoughtMessageCount}`);
+                                    continue;
+                                }
+
+                                // Process actual text content
+                                if (part.text) {
+                                    console.log(`✨ Found text in part: ${part.text.substring(0, 200)}...`);
+                                    allTextContent += part.text + ' ';
+
+                                    // Try to extract JSON from this specific part
+                                    const jsonMatch = part.text.match(/\{[\s\S]*\}/);
+                                    if (jsonMatch) {
+                                        console.log('🎯 Found potential JSON in text, attempting to parse...');
+                                        try {
+                                            const parsedJson = JSON.parse(jsonMatch[0]);
+                                            console.log('✅ Successfully parsed JSON:', Object.keys(parsedJson));
+
+                                            // Validate it has expected structure
+                                            if (parsedJson.hotel_information && parsedJson.day_plans) {
+                                                console.log('🎉 JSON has required structure (hotel_information & day_plans)');
+                                                return parsedJson;
+                                            } else {
+                                                console.log('⚠️ JSON missing required fields. Keys found:', Object.keys(parsedJson));
+                                            }
+                                        } catch (parseErr) {
+                                            console.log('❌ Failed to parse extracted JSON:', parseErr.message);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        console.log(`⚠️ Error parsing data line ${dataLinesFound}:`, e.message);
+                    }
+                }
+            }
+
+            // Log summary of what was skipped
+            console.log(`📊 Processing summary:`);
+            console.log(`   - Total data lines: ${dataLinesFound}`);
+            console.log(`   - Function responses skipped: ${functionResponseCount}`);
+            console.log(`   - Thought messages skipped: ${thoughtMessageCount}`);
+            console.log(`   - Authors encountered: ${authors.join(', ')}`);
+            console.log(`   - Last author: ${lastAuthor}`);
+
+            console.log(`📊 Processed ${dataLinesFound} data lines`);
+            console.log('📄 All collected text content (first 500 chars):', allTextContent.substring(0, 500));
+
+            // Check the last author
+            console.log('📚 All authors found in response:', authors);
+            console.log('👤 Last author in response:', lastAuthor);
+
+            if (lastAuthor === 'planner_summary_agent') {
+                console.log('✅ Last author is planner_summary_agent - this is expected!');
+            } else if (lastAuthor) {
+                console.log(`⚠️ Last author is ${lastAuthor}, expected planner_summary_agent`);
+                console.log('💡 The response may not contain the final summary JSON');
+            }
+
+            // Try to find JSON in all collected text
+            if (allTextContent) {
+                console.log('🔍 Attempting to find JSON in all collected text...');
+
+                // Check if we have "author: planner_summary_agent" pattern
+                if (allTextContent.includes('author') && allTextContent.includes('planner_summary_agent')) {
+                    console.log('📌 Found "author: planner_summary_agent" text in response');
+                    if (!lastAuthor || lastAuthor !== 'planner_summary_agent') {
+                        console.log('⚠️ Text mentions planner_summary_agent but it\'s not the last author');
+                    }
+                }
+
+                // Try multiple JSON extraction patterns
+                const patterns = [
+                    /\{[\s\S]*"hotel_information"[\s\S]*"day_plans"[\s\S]*\}/,  // Look for JSON with our required fields
+                    /\{[\s\S]*\}/,  // Any JSON object
+                    /\{\s*"hotel_information"[\s\S]*\}/  // Start from hotel_information
+                ];
+
+                for (const pattern of patterns) {
+                    const jsonMatch = allTextContent.match(pattern);
+                    if (jsonMatch) {
+                        try {
+                            const parsedJson = JSON.parse(jsonMatch[0]);
+                            console.log('✅ Found and parsed JSON from collected text with pattern');
+                            console.log('📋 JSON keys found:', Object.keys(parsedJson));
+
+                            if (parsedJson.hotel_information && parsedJson.day_plans) {
+                                console.log('🎉 JSON has required structure!');
+                                return parsedJson;
+                            } else if (parsedJson.author === 'planner_summary_agent') {
+                                console.log('⚠️ Got author response but no actual JSON data');
+                            } else {
+                                console.log('⚠️ JSON structure incomplete. Available keys:', Object.keys(parsedJson));
+                            }
+                        } catch (e) {
+                            console.log('⚠️ Failed to parse with this pattern:', e.message);
+                        }
+                    }
+                }
+            }
+
+            // If we still haven't found JSON after all methods
+            console.warn('❌ Could not extract valid JSON from response');
+            console.warn('💡 Response may not contain valid JSON with required fields');
+
+            // Only show detailed debugging if SSE parsing found content
+            if (allTextContent.length > 0) {
+                console.warn('📋 SSE collected text:', allTextContent.substring(0, 500));
+            }
+
+            return null;
+        } catch (error) {
+            console.error('❌ Error extracting JSON:', error);
+            console.error('Stack trace:', error.stack);
+            return null;
         }
     }
 
@@ -1689,14 +2292,41 @@ class FormManager {
     updateLoadingModal(modal, currentAttempt, maxRetries) {
         const loadingContent = modal.querySelector('.loading-content');
         if (loadingContent) {
-            const attemptText = currentAttempt > 1 ? 
-                `<p class="retry-info">Attempt ${currentAttempt} of ${maxRetries}</p>` : '';
-            
+            const attemptColor = currentAttempt === 1 ? '#1976d2' :
+                               currentAttempt === 2 ? '#ff9800' : '#f44336';
+
+            const statusMessage = currentAttempt === 1 ? 'Connecting to AI agent...' :
+                                currentAttempt === 2 ? 'Retrying connection...' :
+                                'Final attempt...';
+
             loadingContent.innerHTML = `
                 <div class="loading-spinner"></div>
                 <h2>🎯 Your Route Is Being Generated...</h2>
                 <p>Tourgent is crafting your perfect travel plan</p>
-                ${attemptText}
+                <div class="attempt-indicator" style="margin: 20px 0;">
+                    <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 10px;">
+                        ${[1, 2, 3].map(i => `
+                            <div style="
+                                width: 40px;
+                                height: 40px;
+                                border-radius: 50%;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                font-weight: bold;
+                                background: ${i <= currentAttempt ? attemptColor : '#e0e0e0'};
+                                color: ${i <= currentAttempt ? 'white' : '#999'};
+                                transition: all 0.3s;
+                            ">${i}</div>
+                        `).join('')}
+                    </div>
+                    <p style="color: ${attemptColor}; font-weight: 500; margin: 10px 0;">
+                        Attempt ${currentAttempt} of ${maxRetries}
+                    </p>
+                    <p style="color: #666; font-size: 14px;">
+                        ${statusMessage}
+                    </p>
+                </div>
                 <div class="loading-dots">
                     <span></span>
                     <span></span>
@@ -2233,6 +2863,94 @@ Here is my trip information:`;
         Storage.form.clearFormData();
 
         Utils.showNotification('Form reset successfully', 'info');
+    }
+
+    /**
+     * Setup token field functionality
+     */
+    setupTokenField() {
+        const tokenInput = document.getElementById('googleAccessToken');
+        const toggleBtn = document.getElementById('tokenVisibilityToggle');
+        const tokenStatus = document.getElementById('tokenStatus');
+
+        if (!tokenInput || !toggleBtn) return;
+
+        // Initialize MDC text field
+        const tokenField = tokenInput.closest('.mdc-text-field');
+        if (tokenField) {
+            mdc.textField.MDCTextField.attachTo(tokenField);
+        }
+
+        // Load saved token from session storage
+        const savedToken = sessionStorage.getItem('google_access_token');
+        if (savedToken) {
+            tokenInput.value = savedToken;
+            this.updateTokenStatus('success');
+        }
+
+        // Toggle visibility
+        toggleBtn.addEventListener('click', () => {
+            const isPassword = tokenInput.type === 'password';
+            tokenInput.type = isPassword ? 'text' : 'password';
+            toggleBtn.querySelector('.material-icons').textContent =
+                isPassword ? 'visibility' : 'visibility_off';
+        });
+
+        // Update status on input
+        tokenInput.addEventListener('input', () => {
+            const token = tokenInput.value.trim();
+            if (token) {
+                sessionStorage.setItem('google_access_token', token);
+                this.updateTokenStatus('success');
+            } else {
+                this.updateTokenStatus('info');
+            }
+        });
+
+        // Handle paste events
+        tokenInput.addEventListener('paste', (e) => {
+            setTimeout(() => {
+                const token = tokenInput.value.trim();
+                if (token) {
+                    this.updateTokenStatus('success');
+                }
+            }, 10);
+        });
+    }
+
+    /**
+     * Update token status indicator
+     */
+    updateTokenStatus(status) {
+        const tokenStatus = document.getElementById('tokenStatus');
+        if (!tokenStatus) return;
+
+        // Remove all status classes
+        tokenStatus.classList.remove('success', 'error', 'warning');
+
+        const statusIcon = tokenStatus.querySelector('.material-icons');
+        const statusText = tokenStatus.querySelector('.status-text');
+
+        switch (status) {
+            case 'success':
+                tokenStatus.classList.add('success');
+                statusIcon.textContent = 'check_circle';
+                statusText.textContent = 'Token saved - Ready to generate plans';
+                break;
+            case 'error':
+                tokenStatus.classList.add('error');
+                statusIcon.textContent = 'error';
+                statusText.textContent = 'Invalid token - Please check and try again';
+                break;
+            case 'warning':
+                tokenStatus.classList.add('warning');
+                statusIcon.textContent = 'warning';
+                statusText.textContent = 'Token might be expired';
+                break;
+            default:
+                statusIcon.textContent = 'info';
+                statusText.textContent = 'Token required for AI features';
+        }
     }
 
     /**

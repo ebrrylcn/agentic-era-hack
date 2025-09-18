@@ -5,190 +5,124 @@
     "lat": 48.8559822,
     "lon": 2.3918613,
     "address": "175 Rue de Charonne, 75011 Paris, France",
-    "check_in": "2024-08-01",
-    "check_out": "2024-08-04",
-    "nights": 3,
-    "price_per_night": null,
-    "total_price": null,
+    "check_in": "2025-09-20",
+    "check_out": "2025-09-22",
+    "nights": 2,
+    "price_per_night": 0,
+    "total_price": 0,
     "booking_link": "http://www.edenlodgeparis.net/"
   },
   "day_plans": [
     {
       "order": 1,
-      "date": "2024-08-01",
+      "date": "2025-09-20",
       "places": [
         {
           "order": 1,
-          "place_id": "ChIJG5Qwtitu5kcR2CNEsYy9cdA",
-          "lat": 48.8599614,
-          "lon": 2.3265614,
-          "name": "Musée d'Orsay",
-          "place_type": "museum",
+          "place_id": "ChIJhVRIjIpt5kcRXc_2Db5r-RE",
+          "lat": 48.8559822,
+          "lon": 2.3918613,
+          "name": "Eden Lodge Paris",
+          "place_type": "hotel",
           "travel": {
             "mode": "start",
             "to_go": null
           },
-          "time": "~10:00"
+          "time": "~14:00"
         },
         {
           "order": 2,
-          "place_id": "ChIJP5sw4t9v5kcRhDTOjGiykio",
-          "lat": 48.858076,
-          "lon": 2.299824,
-          "name": "La Casa di Alfio",
-          "place_type": "restaurant",
+          "place_id": "ChIJVVWZ1gBu5kcRSZDnHjJt764",
+          "lat": 48.860503,
+          "lon": 2.3647278,
+          "name": "Perrotin",
+          "place_type": "museum",
           "travel": {
-            "mode": "drive",
-            "to_go": "15 minutes"
+            "mode": "transit",
+            "to_go": "from hotel"
           },
-          "time": "~13:00"
+          "time": "~15:00"
         },
         {
           "order": 3,
-          "place_id": "ChIJb2D4l_Ru5kcRGc7B93_Kk7k",
-          "lat": 48.8582767,
-          "lon": 2.2944738,
-          "name": "Eiffel Tower",
-          "place_type": "landmark",
-          "travel": {
-            "mode": "walk",
-            "to_go": "5 minutes"
-          },
-          "time": "~16:00"
-        },
-        {
-          "order": 4,
-          "place_id": "ChIJC3Q8OeRv5kcRizBUU2o1qCA",
-          "lat": 48.863726,
-          "lon": 2.2934,
-          "name": "Shang Palace",
+          "place_id": "ChIJ5WAg7Edv5kcRPMLROXdr2mc",
+          "lat": 48.8763558,
+          "lon": 2.3399522,
+          "name": "El Chingon",
           "place_type": "restaurant",
           "travel": {
-            "mode": "drive",
-            "to_go": "15 minutes"
+            "mode": "transit",
+            "to_go": "from Perrotin"
           },
-          "time": "~19:30"
+          "time": "19:30"
         }
       ],
-      "summary": "A day of art and iconic Parisian sights, starting with the Impressionist masterpieces at Musée d'Orsay, followed by a delightful Italian lunch. The afternoon features a visit to the Eiffel Tower, concluding with a luxurious Asian dinner."
+      "summary": "Arrive in Paris and check into your hotel. Spend the afternoon exploring contemporary art at Perrotin gallery, followed by a delicious Mexican dinner at El Chingon."
     },
     {
       "order": 2,
-      "date": "2024-08-02",
+      "date": "2025-09-21",
       "places": [
         {
           "order": 1,
-          "place_id": "ChIJQ9vMHipw5kcRWHC2ESjYaGQ",
-          "lat": 48.8553072,
-          "lon": 2.3158354,
-          "name": "Musée Rodin",
+          "place_id": "ChIJ0dzuSNBv5kcRa6BHUVdFm0k",
+          "lat": 48.8661091,
+          "lon": 2.3124544,
+          "name": "Grand Palais",
           "place_type": "museum",
           "travel": {
-            "mode": "start",
-            "to_go": null
+            "mode": "transit",
+            "to_go": "from hotel"
           },
           "time": "~10:00"
         },
         {
           "order": 2,
-          "place_id": "ChIJcTFvmTtv5kcRVHBCCEnm0vU",
-          "lat": 48.8589539,
-          "lon": 2.3076102,
-          "name": "Gusto Italia Amélie",
+          "place_id": "ChIJ3TQfBAxu5kcRFmYYdLOB0MM",
+          "lat": 48.8713663,
+          "lon": 2.3621938,
+          "name": "El Guacamole République",
           "place_type": "restaurant",
           "travel": {
-            "mode": "walk",
-            "to_go": "10 minutes"
+            "mode": "transit",
+            "to_go": "from Grand Palais"
           },
-          "time": "~13:00"
+          "time": "13:00"
         },
         {
           "order": 3,
-          "place_id": "ChIJ0RTgR_9u5kcR4i-NUX0fQhI",
-          "lat": 48.8606013,
-          "lon": 2.3376437,
-          "name": "Louvre Museum",
+          "place_id": "ChIJ5eGqrARu5kcR_RALcQULvSA",
+          "lat": 48.861533,
+          "lon": 2.3560143,
+          "name": "Marian Goodman Gallery",
           "place_type": "museum",
           "travel": {
-            "mode": "drive",
-            "to_go": "15 minutes"
+            "mode": "walk",
+            "to_go": "from El Guacamole République"
           },
           "time": "~15:00"
         },
         {
           "order": 4,
-          "place_id": "ChIJtcwJ8sRv5kcRK1e1LOEyoHg",
-          "lat": 48.8704646,
-          "lon": 2.2991597,
-          "name": "Imperial Treasure Fine Chinese Cuisine",
+          "place_id": "ChIJa1SnrDNbbaMR1VZpHq9W8aU",
+          "lat": 48.8773422,
+          "lon": 2.3516751,
+          "name": "COMER parís.méxico",
           "place_type": "restaurant",
           "travel": {
-            "mode": "drive",
-            "to_go": "20 minutes"
+            "mode": "transit",
+            "to_go": "from Marian Goodman Gallery"
           },
-          "time": "~19:30"
+          "time": "19:30"
         }
       ],
-      "summary": "A day exploring sculpture and grand art, beginning at the Musée Rodin, followed by an authentic Italian lunch. The afternoon is dedicated to the world-renowned Louvre Museum, concluding with a sophisticated Chinese dinner."
+      "summary": "Start your day with a visit to the iconic Grand Palais, then enjoy Mexican cuisine at El Guacamole République. In the afternoon, discover more art at Marian Goodman Gallery before a final Mexican dinner at COMER parís.méxico."
     },
     {
       "order": 3,
-      "date": "2024-08-03",
-      "places": [
-        {
-          "order": 1,
-          "place_id": "ChIJF7s_9k5u5kcRBwL9D0bK02Y",
-          "lat": 48.8867049,
-          "lon": 2.3431043,
-          "name": "Sacré-Cœur Basilica",
-          "place_type": "landmark",
-          "travel": {
-            "mode": "start",
-            "to_go": null
-          },
-          "time": "~10:00"
-        },
-        {
-          "order": 2,
-          "place_id": "ChIJm4mD2r5u5kcR-7yN7Yg0P5I",
-          "lat": 48.8852157,
-          "lon": 2.3358725,
-          "name": "Al Caratello",
-          "place_type": "restaurant",
-          "travel": {
-            "mode": "walk",
-            "to_go": "15 minutes"
-          },
-          "time": "~13:00"
-        },
-        {
-          "order": 3,
-          "place_id": "ChIJb1Wb1R5u5kcR_Y88P8w2W7Y",
-          "lat": 48.8615011,
-          "lon": 2.3458316,
-          "name": "59 Rivoli",
-          "place_type": "art_gallery",
-          "travel": {
-            "mode": "drive",
-            "to_go": "20 minutes"
-          },
-          "time": "~15:30"
-        },
-        {
-          "order": 4,
-          "place_id": "ChIJc9o6Yupx5kcRznObTp2ITIE",
-          "lat": 48.8528738,
-          "lon": 2.3313927,
-          "name": "Steam Bar",
-          "place_type": "restaurant",
-          "travel": {
-            "mode": "drive",
-            "to_go": "15 minutes"
-          },
-          "time": "~19:30"
-        }
-      ],
-      "summary": "An enchanting day discovering the artistic soul of Paris, starting with the charm of Montmartre and Sacré-Cœur Basilica, followed by a delicious Italian meal. The afternoon offers a visit to a unique art space, concluding with a modern Asian dinner."
+      "date": "2025-09-22",
+      "places": [],
+      "summary": "Enjoy your last morning in Paris before heading to the airport. Check-out from your hotel."
     }
   ]
 }

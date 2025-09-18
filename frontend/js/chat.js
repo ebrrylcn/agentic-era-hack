@@ -24,7 +24,7 @@ class ChatManager {
         this.setupResizeHandle();
         this.restoreChatWidth();
         this.initializeMDCComponents();
-        this.checkADKConnection();
+        // No ADK connection check needed
     }
 
     /**
@@ -395,106 +395,94 @@ class ChatManager {
     }
 
     /**
-     * Send message to ADK agent
+     * Send message to VertexAI and handle streaming response
      */
     async simulateBotResponse(userMessage) {
         // Show typing indicator
         this.showTypingIndicator();
 
         try {
-            const response = await this.sendToADKAgent(userMessage);
-            this.hideTypingIndicator();
-            this.addMessage('bot', response);
-            
+            await this.sendToVertexAIStreaming(userMessage);
+
             // Update suggestions based on context
             this.updateSuggestions(userMessage);
         } catch (error) {
-            console.error('Error communicating with ADK agent:', error);
+            console.error('Error communicating with VertexAI:', error);
             this.hideTypingIndicator();
-            
-            // Fallback to dummy response
-            const fallbackResponse = this.generateBotResponse(userMessage);
-            this.addMessage('bot', fallbackResponse);
-            this.addMessage('bot', '⚠️ Note: Using fallback response. Please check if ADK agent is running.');
+
+            // Show error message
+            this.addMessage('bot', `❌ Error: ${error.message}. Please check your Google Cloud access token and try again.`);
         }
     }
 
     /**
-     * Send message to ADK agent via REST API
+     * Send message to VertexAI with streaming
      */
-    async sendToADKAgent(userMessage) {
-        const adkConfig = this.getADKConfig();
-        const userId = this.getUserId();
-        let sessionId = this.getSessionId();
-        
-        // Try to ensure session exists, create if needed
-        try {
-            await this.ensureSessionExists(userId, sessionId, adkConfig.baseUrl);
-        } catch (error) {
-            console.warn('Could not ensure session exists:', error);
-            // Continue with the request anyway
+    async sendToVertexAIStreaming(userMessage) {
+        const accessToken = this.getAccessToken();
+        if (!accessToken) {
+            throw new Error('Google Cloud access token is required. Please enter your token in the form header.');
         }
-        
-        const payload = {
-            appName: "app",
-            userId: userId,
-            sessionId: sessionId,
-            newMessage: {
-                parts: [{ text: userMessage }],
-                role: "user"
-            },
-            streaming: false
+
+        const userId = "1"; // Using fixed user ID
+        let sessionId = Storage.chat.getGoogleSessionId();
+
+        // Create session if needed
+        if (!sessionId) {
+            sessionId = await this.createGoogleSession(accessToken, userId);
+            Storage.chat.setGoogleSessionId(sessionId);
+        }
+
+        // Create streaming message element
+        const messagesContainer = document.getElementById('chatMessages');
+        const contentElement = StreamHandler.createStreamingMessage(messagesContainer);
+        this.hideTypingIndicator();
+
+        // Send message and stream response
+        const url = 'https://us-central1-aiplatform.googleapis.com/v1/projects/qwiklabs-gcp-03-0d1459a04d94/locations/us-central1/reasoningEngines/8611344282416054272:streamQuery?alt=sse';
+        const requestBody = {
+            "class_method": "async_stream_query",
+            "input": {
+                "user_id": userId,
+                "session_id": sessionId,
+                "message": userMessage
+            }
         };
 
-        // Use the proxy endpoint to avoid CORS issues
-        const response = await fetch('/api/adk/run', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-ADK-Base-Url': adkConfig.baseUrl
-            },
-            body: JSON.stringify(payload)
-        });
+        let accumulatedText = '';
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            // If session not found, try to create it and retry once
-            if (errorData.details && errorData.details.includes('Session not found')) {
-                console.log('Session not found, creating new session...');
-                try {
-                    const newSessionId = await this.createNewSession(userId, adkConfig.baseUrl);
-                    Storage.chat.setSessionId(newSessionId);
-                    
-                    // Retry with new session
-                    payload.sessionId = newSessionId;
-                    const retryResponse = await fetch('/api/adk/run', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-ADK-Base-Url': adkConfig.baseUrl
-                        },
-                        body: JSON.stringify(payload)
-                    });
-                    
-                    if (!retryResponse.ok) {
-                        const retryErrorData = await retryResponse.json();
-                        throw new Error(retryErrorData.error || `HTTP ${retryResponse.status}`);
-                    }
-                    
-                    const retryEvents = await retryResponse.json();
-                    return this.extractResponseFromEvents(retryEvents);
-                } catch (createError) {
-                    console.error('Failed to create new session:', createError);
-                    throw new Error(errorData.error || `HTTP ${response.status}`);
+        await StreamHandler.streamVertexAI(
+            url,
+            requestBody,
+            accessToken,
+            // onChunk callback
+            (chunk, fullText) => {
+                accumulatedText = fullText;
+                // Only update UI if we have actual content (not empty from agent transfers)
+                if (fullText.trim()) {
+                    StreamHandler.updateStreamingMessage(contentElement, fullText);
                 }
-            }
-            throw new Error(errorData.error || `HTTP ${response.status}`);
-        }
+            },
+            // onComplete callback
+            (fullText) => {
+                StreamHandler.finalizeStreamingMessage(contentElement);
+                this.scrollToBottom();
 
-        const events = await response.json();
-        
-        // Extract the agent's response from events
-        return this.extractResponseFromEvents(events);
+                // Save message to conversation history
+                const message = {
+                    type: 'bot',
+                    content: fullText,
+                    timestamp: Date.now()
+                };
+                this.conversation.push(message);
+                Storage.chat.saveMessage(message);
+            },
+            // onError callback
+            (error) => {
+                StreamHandler.finalizeStreamingMessage(contentElement);
+                contentElement.innerHTML = `<span style="color: red;">Error: ${error.message}</span>`;
+            }
+        );
     }
 
     /**
@@ -522,128 +510,81 @@ class ChatManager {
     }
 
     /**
-     * Create a new session in ADK
+     * Create a new session in Google ADK
      */
-    async createNewSession(userId, adkBaseUrl) {
-        const response = await fetch('/api/adk/create-session', {
+    async createGoogleSession(accessToken, userId) {
+        const response = await fetch('https://us-central1-aiplatform.googleapis.com/v1/projects/qwiklabs-gcp-03-0d1459a04d94/locations/us-central1/reasoningEngines/8611344282416054272:query', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'X-ADK-Base-Url': adkBaseUrl,
-                'X-App-Name': 'app',
-                'X-User-Id': userId
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({})
+            body: JSON.stringify({
+                "class_method": "async_create_session",
+                "input": {
+                    "user_id": userId
+                }
+            })
         });
 
         if (!response.ok) {
-            throw new Error(`Failed to create session: ${response.status}`);
+            const error = await response.text();
+            throw new Error(`Failed to create Google session: ${error}`);
         }
 
         const sessionData = await response.json();
-        return sessionData.id;
+        console.log('Created Google session:', sessionData.output.id);
+        return sessionData.output.id;
     }
 
+
     /**
-     * Ensure session exists in ADK
+     * Delete Google ADK session
      */
-    async ensureSessionExists(userId, sessionId, adkBaseUrl) {
+    async deleteGoogleSession(accessToken, userId, sessionId) {
         try {
-            const response = await fetch('/api/adk/check-session', {
-                method: 'GET',
+            const response = await fetch('https://us-central1-aiplatform.googleapis.com/v1/projects/qwiklabs-gcp-03-0d1459a04d94/locations/us-central1/reasoningEngines/8611344282416054272:query', {
+                method: 'POST',
                 headers: {
-                    'X-ADK-Base-Url': adkBaseUrl,
-                    'X-App-Name': 'app',
-                    'X-User-Id': userId,
-                    'X-Session-Id': sessionId
-                }
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "class_method": "async_delete_session",
+                    "input": {
+                        "user_id": userId,
+                        "session_id": sessionId
+                    }
+                })
             });
-            
+
             if (response.ok) {
-                return true; // Session exists
+                console.log('Google session deleted successfully');
             }
         } catch (error) {
-            console.warn('Error checking session:', error);
+            console.warn('Failed to delete session:', error);
         }
-        return false;
     }
+
+
 
     /**
-     * Extract response text from ADK events
+     * Get Google Cloud access token from input field
      */
-    extractResponseFromEvents(events) {
-        if (!events || !Array.isArray(events)) {
-            return "I'm sorry, I didn't receive a proper response. Please try again.";
-        }
-
-        // Look for events with content from the agent
-        for (const event of events.reverse()) { // Start from the latest events
-            if (event.content && event.content.parts) {
-                for (const part of event.content.parts) {
-                    if (part.text && part.text.trim()) {
-                        return part.text.trim();
-                    }
-                }
+    getAccessToken() {
+        const tokenInput = document.getElementById('googleAccessToken');
+        if (tokenInput) {
+            const token = tokenInput.value.trim();
+            if (token) {
+                // Store in session storage for convenience
+                sessionStorage.setItem('google_access_token', token);
+                return token;
             }
         }
-
-        return "I received your message but couldn't generate a response. Please try again.";
+        // Try to get from session storage
+        return sessionStorage.getItem('google_access_token');
     }
 
-    /**
-     * Generate bot response based on user input
-     */
-    generateBotResponse(userMessage) {
-        const message = userMessage.toLowerCase();
-
-        // Context-aware responses based on form data
-        const formData = window.formManager ? window.formManager.formData : null;
-
-        if (message.includes('destination') || message.includes('city') || message.includes('country')) {
-            if (formData && formData.city) {
-                return `Great choice with ${formData.city}! I can help you discover amazing places there. What specific activities interest you most?`;
-            }
-            return "I'd love to help you choose a destination! What type of atmosphere are you looking for - bustling city life, peaceful countryside, or coastal relaxation?";
-        }
-
-        if (message.includes('budget') || message.includes('cost') || message.includes('expensive')) {
-            return "Budget planning is crucial for a great trip! I can suggest options for any budget level. Are you looking for budget-friendly options, mid-range comfort, or luxury experiences?";
-        }
-
-        if (message.includes('food') || message.includes('restaurant') || message.includes('cuisine')) {
-            if (formData && formData.preferences && formData.preferences.cousines) {
-                return `I see you're interested in ${formData.preferences.cousines.join(', ')} cuisine. I can recommend some fantastic local spots that match your taste!`;
-            }
-            return "Food is one of the best parts of traveling! What type of cuisine are you most excited to try? Local specialties, familiar favorites, or something completely new?";
-        }
-
-        if (message.includes('hotel') || message.includes('accommodation') || message.includes('stay')) {
-            return "Choosing the right accommodation can make or break your trip! Are you looking for something in the city center, near specific attractions, or in a quieter area?";
-        }
-
-        if (message.includes('weather') || message.includes('climate')) {
-            return "Weather definitely affects your travel plans! I can help you pack appropriately and suggest indoor alternatives if needed. What season are you planning to travel?";
-        }
-
-        if (message.includes('help') || message.includes('how')) {
-            return "I'm here to help make your trip planning easier! You can ask me about destinations, activities, budgeting, accommodations, or anything else travel-related. What would you like to know?";
-        }
-
-        if (message.includes('popular') || message.includes('recommend')) {
-            return "I'd be happy to share some popular recommendations! Are you interested in must-see attractions, hidden local gems, popular restaurants, or something specific?";
-        }
-
-        // Default responses
-        const defaultResponses = [
-            "That's a great question! I'm here to help you plan the perfect trip. Could you tell me more about what you're looking for?",
-            "Interesting! Travel planning can be exciting. What aspect of your trip would you like to focus on first?",
-            "I love helping people discover new places! What kind of experience are you hoping to have on your trip?",
-            "Thanks for sharing that with me! Is there anything specific about your travel plans I can help you with?",
-            "Great to hear from you! I'm here to make your travel planning as smooth as possible. What can I help you with today?"
-        ];
-
-        return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
-    }
 
     /**
      * Handle suggestion click
@@ -792,7 +733,7 @@ class ChatManager {
      * Add welcome message
      */
     addWelcomeMessage() {
-        const welcomeMessage = "Hello! I'm Tourgent, your expert travel planning assistant powered by Google ADK. I can help you plan amazing trips, suggest destinations, find accommodations, and provide local insights. Fill out the form or just start chatting with me about your travel plans!";
+        const welcomeMessage = "Hello! I'm Tourgent, your expert travel planning assistant powered by Google VertexAI. I can help you plan amazing trips, suggest destinations, find accommodations, and provide local insights. Fill out the form or just start chatting with me about your travel plans!";
         this.addMessage('bot', welcomeMessage);
     }
 
@@ -842,10 +783,6 @@ class ChatManager {
                 <span class="material-icons">download</span>
                 <span>Export chat</span>
             </div>
-            <div class="menu-item" data-action="adk-config">
-                <span class="material-icons">settings</span>
-                <span>ADK Configuration</span>
-            </div>
             <div class="menu-item" data-action="help">
                 <span class="material-icons">help</span>
                 <span>Help & shortcuts</span>
@@ -878,9 +815,6 @@ class ChatManager {
                     break;
                 case 'export':
                     this.exportConversation();
-                    break;
-                case 'adk-config':
-                    this.showADKConfiguration();
                     break;
                 case 'help':
                     this.showHelp();
@@ -920,9 +854,9 @@ class ChatManager {
             • Accommodation advice<br>
             • Travel tips and customs<br><br>
 
-            <strong>ADK Integration:</strong><br>
-            This chat connects to your ADK t_raveler agent.<br>
-            Make sure to run 'adk web' to start the agent server.
+            <strong>AI Integration:</strong><br>
+            This chat connects directly to Google's VertexAI.<br>
+            Make sure to enter your Google Cloud access token above.
         `;
 
         this.addMessage('bot', helpMessage);
@@ -944,163 +878,10 @@ class ChatManager {
         Utils.showNotification('New session started', 'success');
     }
 
-    /**
-     * Show ADK configuration dialog
-     */
-    showADKConfiguration() {
-        const currentConfig = this.getADKConfig();
-        
-        const configDialog = document.createElement('div');
-        configDialog.className = 'adk-config-dialog';
-        configDialog.innerHTML = `
-            <div class="config-overlay">
-                <div class="config-content">
-                    <h3>ADK Configuration</h3>
-                    <div class="config-field">
-                        <label for="adkBaseUrl">ADK Server URL:</label>
-                        <input type="url" id="adkBaseUrl" value="${currentConfig.baseUrl}" placeholder="http://localhost:8000">
-                        <small>The URL where your ADK web server is running</small>
-                    </div>
-                    <div class="config-field">
-                        <label for="adkAgentName">Agent Name:</label>
-                        <input type="text" id="adkAgentName" value="t_raveler" readonly>
-                        <small>The name of your travel agent (from agent.py)</small>
-                    </div>
-                    <div class="config-actions">
-                        <button id="testAdkConnection" class="btn-secondary">Test Connection</button>
-                        <button id="saveAdkConfig" class="btn-primary">Save</button>
-                        <button id="cancelAdkConfig" class="btn-secondary">Cancel</button>
-                    </div>
-                    <div id="adkConnectionStatus"></div>
-                </div>
-            </div>
-        `;
 
-        document.body.appendChild(configDialog);
 
-        // Handle actions
-        document.getElementById('testAdkConnection').addEventListener('click', () => {
-            this.testADKConnection();
-        });
 
-        document.getElementById('saveAdkConfig').addEventListener('click', () => {
-            const baseUrl = document.getElementById('adkBaseUrl').value.trim();
-            if (baseUrl) {
-                Storage.chat.setItem('adk_base_url', baseUrl);
-                Utils.showNotification('ADK configuration saved', 'success');
-                configDialog.remove();
-            }
-        });
 
-        document.getElementById('cancelAdkConfig').addEventListener('click', () => {
-            configDialog.remove();
-        });
-
-        // Close on overlay click
-        configDialog.querySelector('.config-overlay').addEventListener('click', (e) => {
-            if (e.target === e.currentTarget) {
-                configDialog.remove();
-            }
-        });
-    }
-
-    /**
-     * Test ADK connection
-     */
-    async testADKConnection() {
-        const statusElement = document.getElementById('adkConnectionStatus');
-        const baseUrl = document.getElementById('adkBaseUrl').value.trim();
-        
-        if (!baseUrl) {
-            statusElement.innerHTML = '<span style="color: red;">Please enter a valid URL</span>';
-            return;
-        }
-
-        statusElement.innerHTML = '<span style="color: blue;">Testing connection...</span>';
-
-        try {
-            const response = await fetch('/api/adk/test', { 
-                method: 'GET',
-                headers: {
-                    'X-ADK-Base-Url': baseUrl
-                }
-            });
-            
-            const data = await response.json();
-            
-            if (response.ok && data.status === 'connected') {
-                statusElement.innerHTML = '<span style="color: green;">✓ Connection successful!</span>';
-            } else {
-                statusElement.innerHTML = `<span style="color: red;">✗ ${data.error}</span><br><small>${data.suggestion}</small>`;
-            }
-        } catch (error) {
-            statusElement.innerHTML = '<span style="color: red;">✗ Connection failed. Make sure ADK web server is running.</span>';
-        }
-    }
-
-    /**
-     * Get ADK configuration with user settings
-     */
-    getADKConfig() {
-        const savedBaseUrl = Storage.chat.getItem('adk_base_url', null);
-        return {
-            baseUrl: savedBaseUrl || 'http://localhost:8000'
-        };
-    }
-
-    /**
-     * Check ADK connection status on initialization
-     */
-    async checkADKConnection() {
-        try {
-            const response = await fetch('/api/adk/test', {
-                method: 'GET',
-                headers: {
-                    'X-ADK-Base-Url': this.getADKConfig().baseUrl
-                }
-            });
-            
-            const data = await response.json();
-            
-            if (response.ok && data.status === 'connected') {
-                console.log('✅ ADK agent connected successfully');
-                this.showConnectionStatus('connected');
-            } else {
-                console.warn('⚠️ ADK agent not available, using fallback responses');
-                this.showConnectionStatus('disconnected', data.suggestion);
-            }
-        } catch (error) {
-            console.warn('⚠️ ADK connection check failed, using fallback responses');
-            this.showConnectionStatus('error', 'Make sure ADK web server is running');
-        }
-    }
-
-    /**
-     * Show connection status in chat
-     */
-    showConnectionStatus(status, message = '') {
-        if (!this.isOpen) return; // Don't show status if chat is closed
-
-        let statusMessage = '';
-        switch (status) {
-            case 'connected':
-                statusMessage = '🟢 Connected to ADK agent';
-                break;
-            case 'disconnected':
-                statusMessage = `🟡 ADK agent offline - using fallback responses${message ? '\n' + message : ''}`;
-                break;
-            case 'error':
-                statusMessage = `🔴 Connection error - using fallback responses${message ? '\n' + message : ''}`;
-                break;
-        }
-
-        if (statusMessage) {
-            // Add a subtle status message
-            setTimeout(() => {
-                this.addMessage('system', statusMessage, { temporary: true });
-            }, 1000);
-        }
-    }
 
     /**
      * Handle window resize

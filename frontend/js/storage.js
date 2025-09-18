@@ -551,8 +551,26 @@ class ChatStorage extends StorageManager {
      */
     clearSession() {
         const sessionCleared = this.removeItem('session_id');
+        const googleSessionCleared = this.removeItem('google_session_id');
         const conversationCleared = this.clearConversation();
-        return sessionCleared && conversationCleared;
+        return sessionCleared && googleSessionCleared && conversationCleared;
+    }
+
+    /**
+     * Get Google session ID
+     * @returns {string} - Google session ID
+     */
+    getGoogleSessionId() {
+        return this.getItem('google_session_id', null);
+    }
+
+    /**
+     * Set Google session ID
+     * @param {string} sessionId - Google session ID
+     * @returns {boolean} - Success status
+     */
+    setGoogleSessionId(sessionId) {
+        return this.setItem('google_session_id', sessionId);
     }
 
     /**

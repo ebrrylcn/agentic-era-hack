@@ -27,6 +27,28 @@
             <div class="logo-header">
                 <img src="tourgent_logo.png" alt="Turgent Logo" class="turgent-logo-small">
             </div>
+
+            <!-- Google Cloud Access Token Input -->
+            <div class="access-token-container">
+                <div class="mdc-text-field mdc-text-field--outlined access-token-field">
+                    <input type="password" id="googleAccessToken" class="mdc-text-field__input" placeholder=" ">
+                    <div class="mdc-notched-outline">
+                        <div class="mdc-notched-outline__leading"></div>
+                        <div class="mdc-notched-outline__notch">
+                            <label for="googleAccessToken" class="mdc-floating-label">Google Cloud Access Token</label>
+                        </div>
+                        <div class="mdc-notched-outline__trailing"></div>
+                    </div>
+                </div>
+                <button id="tokenVisibilityToggle" class="mdc-icon-button" aria-label="Toggle token visibility">
+                    <span class="material-icons">visibility_off</span>
+                </button>
+                <div class="token-status" id="tokenStatus">
+                    <span class="material-icons">info</span>
+                    <span class="status-text">Token required for AI features</span>
+                </div>
+            </div>
+
             <div class="form-container">
                 <!-- Progress Indicator -->
                 <div class="progress-container">
@@ -777,6 +799,7 @@
     <!-- Custom Scripts -->
     <script src="js/utils.js"></script>
     <script src="js/storage.js"></script>
+    <script src="js/stream.js"></script>
     <script src="js/form.js"></script>
     <script src="js/chat.js"></script>
     <script src="js/main.js"></script>
