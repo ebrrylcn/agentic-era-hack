@@ -87,6 +87,14 @@ class ChatManager {
             settingsBtn.addEventListener('click', () => this.showChatSettings());
         }
 
+        // Generate Plan button
+        const generatePlanBtn = document.getElementById('chatGeneratePlanBtn');
+        if (generatePlanBtn) {
+            generatePlanBtn.addEventListener('click', () => this.generatePlanFromChat());
+            // Initialize MDC button
+            mdc.ripple.MDCRipple.attachTo(generatePlanBtn);
+        }
+
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.ctrlKey || e.metaKey) {
@@ -929,6 +937,215 @@ class ChatManager {
 
         // Save preference
         Storage.chat.setChatWidth(this.currentWidth);
+    }
+
+    /**
+     * Generate travel plan from chat conversation
+     */
+    async generatePlanFromChat() {
+        console.log('🎯 Generating travel plan from chat conversation...');
+
+        // Check if we have conversation history
+        if (this.conversation.length < 2) {
+            Utils.showNotification('Please have a conversation about your travel preferences first', 'warning');
+            return;
+        }
+
+        // Get access token
+        const accessToken = this.getAccessToken();
+        if (!accessToken) {
+            Utils.showNotification('Please enter your Google Cloud access token first', 'error');
+            document.getElementById('googleAccessToken')?.focus();
+            return;
+        }
+
+        // Disable button and show loading state
+        const generateBtn = document.getElementById('chatGeneratePlanBtn');
+        if (generateBtn) {
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = `<span class="material-icons rotating">sync</span>`;
+        }
+
+        try {
+            // Format conversation history as context
+            const conversationContext = this.formatConversationAsContext();
+
+            // Create the fixed prompt with conversation history
+            const message = `${conversationContext}
+
+IMPORTANT: User has given all of the preferences in the conversation above. You can use only two agents for formatting:
+1. You MUST use transfer_to_agent(planner_summary_agent) to generate the final JSON travel plan
+2. You can use transfer_to_agent(text_search_agent) to find lat/long coordinates if needed
+3. You CANNOT use any other tools or agents
+
+Generate a complete travel plan JSON with hotel_information and day_plans based on the user's preferences discussed above.`;
+
+            console.log('📝 Sending message with conversation context to generate plan');
+
+            // Create or get session
+            const userId = "1"; // Using fixed user ID
+            let sessionId = Storage.chat.getGoogleSessionId();
+
+            if (!sessionId) {
+                sessionId = await this.createGoogleSession(accessToken, userId);
+                Storage.chat.setGoogleSessionId(sessionId);
+            }
+
+            // Send message to generate plan
+            const response = await this.sendToGoogleADKForPlan(accessToken, userId, sessionId, message);
+
+            // Extract JSON from response
+            const jsonPlan = this.extractJSONFromPlanResponse(response);
+
+            if (jsonPlan) {
+                console.log('✅ Successfully generated plan from chat!');
+
+                // Save to output.json
+                await this.savePlanToFile(jsonPlan);
+
+                // Show success message
+                Utils.showNotification('Travel plan generated successfully!', 'success');
+
+                // Add confirmation message to chat
+                this.addMessage('bot', '✅ Travel plan has been generated based on our conversation! The plan has been saved and you can view it in the display section.');
+
+                // Optionally redirect to routes page
+                if (confirm('Plan generated! Would you like to view it now?')) {
+                    window.location.href = 'routes.html';
+                }
+            } else {
+                throw new Error('Failed to generate valid JSON plan');
+            }
+
+        } catch (error) {
+            console.error('❌ Error generating plan from chat:', error);
+            Utils.showNotification(`Failed to generate plan: ${error.message}`, 'error');
+            this.addMessage('bot', `❌ Failed to generate plan: ${error.message}`);
+        } finally {
+            // Reset button state
+            if (generateBtn) {
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = `<span class="material-icons">assignment_turned_in</span>`;
+            }
+        }
+    }
+
+    /**
+     * Format conversation history as context for plan generation
+     */
+    formatConversationAsContext() {
+        let context = "Here is the conversation history with the user about their travel preferences:\n\n";
+
+        this.conversation.forEach(msg => {
+            if (msg.type === 'user') {
+                context += `User: ${msg.content}\n`;
+            } else if (msg.type === 'bot') {
+                context += `Assistant: ${msg.content}\n`;
+            }
+        });
+
+        return context;
+    }
+
+    /**
+     * Send message to Google ADK for plan generation (reusing form.js logic)
+     */
+    async sendToGoogleADKForPlan(accessToken, userId, sessionId, message) {
+        // Use the same approach as form.js - try streaming first, then fallback
+        const url = 'https://us-central1-aiplatform.googleapis.com/v1/projects/qwiklabs-gcp-03-0d1459a04d94/locations/us-central1/reasoningEngines/8611344282416054272:streamQuery?alt=sse';
+        const requestBody = {
+            "class_method": "async_stream_query",
+            "input": {
+                "user_id": userId,
+                "session_id": sessionId,
+                "message": message
+            }
+        };
+
+        return new Promise((resolve, reject) => {
+            let accumulatedText = '';
+
+            StreamHandler.streamVertexAI(
+                url,
+                requestBody,
+                accessToken,
+                (chunk, fullText) => {
+                    accumulatedText = fullText;
+                },
+                (fullText) => {
+                    resolve(fullText);
+                },
+                (error) => {
+                    reject(error);
+                }
+            );
+        });
+    }
+
+    /**
+     * Extract JSON from plan response (reusing form.js logic)
+     */
+    extractJSONFromPlanResponse(responseText) {
+        console.log('🔍 Extracting JSON from plan response...');
+
+        // Try direct JSON parse
+        try {
+            const directParse = JSON.parse(responseText);
+            if (directParse.hotel_information && directParse.day_plans) {
+                return directParse;
+            }
+        } catch (e) {
+            // Not direct JSON
+        }
+
+        // Try markdown code block
+        const markdownMatch = responseText.match(/```json\s*([\s\S]*?)\s*```/);
+        if (markdownMatch) {
+            try {
+                const jsonFromMarkdown = JSON.parse(markdownMatch[1]);
+                if (jsonFromMarkdown.hotel_information && jsonFromMarkdown.day_plans) {
+                    return jsonFromMarkdown;
+                }
+            } catch (e) {
+                // Failed to parse
+            }
+        }
+
+        // Try pattern matching
+        const jsonMatch = responseText.match(/\{[\s\S]*"hotel_information"[\s\S]*"day_plans"[\s\S]*\}/);
+        if (jsonMatch) {
+            try {
+                return JSON.parse(jsonMatch[0]);
+            } catch (e) {
+                // Failed to parse
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Save generated plan to file
+     */
+    async savePlanToFile(jsonPlan) {
+        try {
+            const response = await fetch('/api/save-output', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsonPlan)
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to save plan to file');
+            }
+
+            console.log('✅ Plan saved to output.json');
+        } catch (error) {
+            console.warn('⚠️ Could not save to server, saving to localStorage instead');
+            localStorage.setItem('travel_plan_output', JSON.stringify(jsonPlan));
+        }
     }
 }
 

@@ -1,128 +1,109 @@
 {
   "hotel_information": {
-    "name": "Eden Lodge Paris",
-    "place_id": "ChIJhVRIjIpt5kcRXc_2Db5r-RE",
-    "lat": 48.8559822,
-    "lon": 2.3918613,
-    "address": "175 Rue de Charonne, 75011 Paris, France",
-    "check_in": "2025-09-20",
-    "check_out": "2025-09-22",
-    "nights": 2,
-    "price_per_night": 0,
-    "total_price": 0,
-    "booking_link": "http://www.edenlodgeparis.net/"
+    "name": "Hotel Soho Barcelona",
+    "place_id": "ChIJx53DKoqipBIRsP8x7QGI88A",
+    "lat": 41.3834388,
+    "lon": 2.1598504,
+    "address": "Gran Via de les Corts Catalanes, 543, 545, L'Eixample, 08011 Barcelona, Spain",
+    "check_in": "2525-10-25",
+    "check_out": "2525-10-28",
+    "nights": 3,
+    "price_per_night": null,
+    "total_price": null,
+    "booking_link": null
   },
   "day_plans": [
     {
       "order": 1,
-      "date": "2025-09-20",
+      "date": "2525-10-25",
       "places": [
         {
           "order": 1,
-          "place_id": "ChIJhVRIjIpt5kcRXc_2Db5r-RE",
-          "lat": 48.8559822,
-          "lon": 2.3918613,
-          "name": "Eden Lodge Paris",
-          "place_type": "hotel",
+          "place_id": "ChIJk_s92NyipBIRUMnDG8Kq2Js",
+          "lat": 41.4036299,
+          "lon": 2.1743558,
+          "name": "Basílica de la Sagrada Família",
+          "place_type": "church",
           "travel": {
             "mode": "start",
             "to_go": null
           },
-          "time": "~14:00"
+          "time": "10:00"
         },
         {
           "order": 2,
-          "place_id": "ChIJVVWZ1gBu5kcRSZDnHjJt764",
-          "lat": 48.860503,
-          "lon": 2.3647278,
-          "name": "Perrotin",
-          "place_type": "museum",
+          "place_id": "ChIJq0HUUq6ipBIRWM6qGqALmok",
+          "lat": 41.4144948,
+          "lon": 2.1526945,
+          "name": "Park Güell",
+          "place_type": "park",
           "travel": {
-            "mode": "transit",
-            "to_go": "from hotel"
+            "mode": "drive",
+            "to_go": null
           },
-          "time": "~15:00"
-        },
-        {
-          "order": 3,
-          "place_id": "ChIJ5WAg7Edv5kcRPMLROXdr2mc",
-          "lat": 48.8763558,
-          "lon": 2.3399522,
-          "name": "El Chingon",
-          "place_type": "restaurant",
-          "travel": {
-            "mode": "transit",
-            "to_go": "from Perrotin"
-          },
-          "time": "19:30"
+          "time": "14:00"
         }
       ],
-      "summary": "Arrive in Paris and check into your hotel. Spend the afternoon exploring contemporary art at Perrotin gallery, followed by a delicious Mexican dinner at El Chingon."
+      "summary": "Gaudi'nin eşsiz eserlerini keşfedeceğiniz büyülü bir gün. La Sagrada Familia'nın büyüleyici mimarisi ve Park Güell'in renkli, fantastik atmosferi sizi bekliyor. Akşam yemeği için Gràcia bölgesinde çocuk dostu bir mekan bulabilirsiniz."
     },
     {
       "order": 2,
-      "date": "2025-09-21",
+      "date": "2525-10-26",
       "places": [
         {
           "order": 1,
-          "place_id": "ChIJ0dzuSNBv5kcRa6BHUVdFm0k",
-          "lat": 48.8661091,
-          "lon": 2.3124544,
-          "name": "Grand Palais",
-          "place_type": "museum",
+          "place_id": "ChIJtWCztVSipBIRYJl5aFMSIDs",
+          "lat": 41.3768473,
+          "lon": 2.1843334,
+          "name": "L’Aquàrium de Barcelona",
+          "place_type": "aquarium",
           "travel": {
-            "mode": "transit",
-            "to_go": "from hotel"
+            "mode": "start",
+            "to_go": null
           },
-          "time": "~10:00"
-        },
-        {
-          "order": 2,
-          "place_id": "ChIJ3TQfBAxu5kcRFmYYdLOB0MM",
-          "lat": 48.8713663,
-          "lon": 2.3621938,
-          "name": "El Guacamole République",
-          "place_type": "restaurant",
-          "travel": {
-            "mode": "transit",
-            "to_go": "from Grand Palais"
-          },
-          "time": "13:00"
-        },
-        {
-          "order": 3,
-          "place_id": "ChIJ5eGqrARu5kcR_RALcQULvSA",
-          "lat": 48.861533,
-          "lon": 2.3560143,
-          "name": "Marian Goodman Gallery",
-          "place_type": "museum",
-          "travel": {
-            "mode": "walk",
-            "to_go": "from El Guacamole République"
-          },
-          "time": "~15:00"
-        },
-        {
-          "order": 4,
-          "place_id": "ChIJa1SnrDNbbaMR1VZpHq9W8aU",
-          "lat": 48.8773422,
-          "lon": 2.3516751,
-          "name": "COMER parís.méxico",
-          "place_type": "restaurant",
-          "travel": {
-            "mode": "transit",
-            "to_go": "from Marian Goodman Gallery"
-          },
-          "time": "19:30"
+          "time": "11:00"
         }
       ],
-      "summary": "Start your day with a visit to the iconic Grand Palais, then enjoy Mexican cuisine at El Guacamole République. In the afternoon, discover more art at Marian Goodman Gallery before a final Mexican dinner at COMER parís.méxico."
+      "summary": "Denizin ve su altı dünyasının tadını çıkaracağınız bir gün. L'Aquàrium de Barcelona'da köpekbalıkları ve tropik balıklarla karşılaşacak, ardından Barceloneta Plajı'nda güneşin ve denizin keyfini çıkaracaksınız. Akşam yemeği için hareketli Port Vell bölgesinde dolaşabilirsiniz."
     },
     {
       "order": 3,
-      "date": "2025-09-22",
+      "date": "2525-10-27",
+      "places": [
+        {
+          "order": 1,
+          "place_id": "ChIJFbmW5zGjpBIRBzGUaxI9fLc",
+          "lat": 41.38192360000001,
+          "lon": 2.1728910999999997,
+          "name": "BIG FUN MUSEUM",
+          "place_type": "museum",
+          "travel": {
+            "mode": "start",
+            "to_go": null
+          },
+          "time": "10:30"
+        },
+        {
+          "order": 2,
+          "place_id": "ChIJ4QmWQ_2ipBIRcD1a5hhhOEI",
+          "lat": 41.388123,
+          "lon": 2.1860152,
+          "name": "Ciutadella Park",
+          "place_type": "park",
+          "travel": {
+            "mode": "walk",
+            "to_go": null
+          },
+          "time": "14:00"
+        }
+      ],
+      "summary": "Eğlenceli müzeler ve doğa ile iç içe bir gün. Big Fun Museum'da optik illüzyonlarla eğlenecek, ardından Ciutadella Parkı'nda kayık gezintisi yapabilir veya yeşilin tadını çıkarabilirsiniz. Akşam yemeği için tarihi El Born bölgesinde tapas lezzetlerini deneyimleyebilirsiniz."
+    },
+    {
+      "order": 4,
+      "date": "2525-10-28",
       "places": [],
-      "summary": "Enjoy your last morning in Paris before heading to the airport. Check-out from your hotel."
+      "summary": "Barcelona'daki tatilinizin son günü. Uçuş saatinize göre şehre veda edebilirsiniz."
     }
   ]
 }

@@ -506,6 +506,24 @@
     color: #5F6368;
 }
 
+/* Generate Plan Button */
+.chat-generate-btn {
+    --mdc-icon-button-size: 48px;
+    background-color: var(--google-green);
+    color: white;
+    flex-shrink: 0;
+    margin-left: var(--spacing-xs);
+}
+
+.chat-generate-btn:hover:not(:disabled) {
+    background-color: #0F9D58;
+}
+
+.chat-generate-btn:disabled {
+    background-color: #DADCE0;
+    color: #5F6368;
+}
+
 /* Message Status Indicators */
 .message-status {
     font-size: 11px;
@@ -526,6 +544,19 @@
 }
 
 /* Animations */
+@keyframes rotating {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.rotating {
+    animation: rotating 1s linear infinite;
+}
+
 @keyframes fadeInUp {
     from {
         opacity: 0;
