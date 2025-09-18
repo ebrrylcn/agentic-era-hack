@@ -286,21 +286,118 @@ class FormManager {
             { name: 'Bangkok', country: 'Thailand', icon: 'location_city', popular: true },
             { name: 'Istanbul', country: 'Turkey', icon: 'location_city', popular: true },
             { name: 'Sydney', country: 'Australia', icon: 'location_city', popular: true },
-            { name: 'Amsterdam', country: 'Netherlands', icon: 'location_city', popular: true }
+            { name: 'Amsterdam', country: 'Netherlands', icon: 'location_city', popular: true },
+            { name: 'Los Angeles', country: 'USA', icon: 'location_city', popular: true },
+            { name: 'San Francisco', country: 'USA', icon: 'location_city', popular: true },
+            { name: 'Chicago', country: 'USA', icon: 'location_city', popular: true },
+            { name: 'Toronto', country: 'Canada', icon: 'location_city', popular: true },
+            { name: 'Vancouver', country: 'Canada', icon: 'location_city', popular: true },
+            { name: 'Mexico City', country: 'Mexico', icon: 'location_city', popular: true },
+            { name: 'Rio de Janeiro', country: 'Brazil', icon: 'location_city', popular: true },
+            { name: 'São Paulo', country: 'Brazil', icon: 'location_city', popular: true },
+            { name: 'Buenos Aires', country: 'Argentina', icon: 'location_city', popular: true },
+            { name: 'Santiago', country: 'Chile', icon: 'location_city', popular: true },
+            { name: 'Lima', country: 'Peru', icon: 'location_city', popular: true },
+            { name: 'Bogotá', country: 'Colombia', icon: 'location_city', popular: true },
+            { name: 'Cape Town', country: 'South Africa', icon: 'location_city', popular: true },
+            { name: 'Johannesburg', country: 'South Africa', icon: 'location_city', popular: true },
+            { name: 'Marrakech', country: 'Morocco', icon: 'location_city', popular: true },
+            { name: 'Cairo', country: 'Egypt', icon: 'location_city', popular: true },
+            { name: 'Doha', country: 'Qatar', icon: 'location_city', popular: true },
+            { name: 'Kuwait City', country: 'Kuwait', icon: 'location_city', popular: true },
+            { name: 'Abu Dhabi', country: 'UAE', icon: 'location_city', popular: true },
+            { name: 'Muscat', country: 'Oman', icon: 'location_city', popular: true },
+            { name: 'Delhi', country: 'India', icon: 'location_city', popular: true },
+            { name: 'Mumbai', country: 'India', icon: 'location_city', popular: true },
+            { name: 'Bangalore', country: 'India', icon: 'location_city', popular: true },
+            { name: 'Chennai', country: 'India', icon: 'location_city', popular: true },
+            { name: 'Kathmandu', country: 'Nepal', icon: 'location_city', popular: true },
+            { name: 'Colombo', country: 'Sri Lanka', icon: 'location_city', popular: true },
+            { name: 'Karachi', country: 'Pakistan', icon: 'location_city', popular: true },
+            { name: 'Lahore', country: 'Pakistan', icon: 'location_city', popular: true },
+            { name: 'Seoul', country: 'South Korea', icon: 'location_city', popular: true },
+            { name: 'Busan', country: 'South Korea', icon: 'location_city', popular: true },
+            { name: 'Kyoto', country: 'Japan', icon: 'location_city', popular: true },
+            { name: 'Osaka', country: 'Japan', icon: 'location_city', popular: true },
+            { name: 'Hong Kong', country: 'China', icon: 'location_city', popular: true },
+            { name: 'Shanghai', country: 'China', icon: 'location_city', popular: true },
+            { name: 'Beijing', country: 'China', icon: 'location_city', popular: true },
+            { name: 'Shenzhen', country: 'China', icon: 'location_city', popular: true },
+            { name: 'Guangzhou', country: 'China', icon: 'location_city', popular: true },
+            { name: 'Macau', country: 'China', icon: 'location_city', popular: true },
+            { name: 'Taipei', country: 'Taiwan', icon: 'location_city', popular: true },
+            { name: 'Hanoi', country: 'Vietnam', icon: 'location_city', popular: true },
+            { name: 'Ho Chi Minh City', country: 'Vietnam', icon: 'location_city', popular: true },
+            { name: 'Phnom Penh', country: 'Cambodia', icon: 'location_city', popular: true },
+            { name: 'Yangon', country: 'Myanmar', icon: 'location_city', popular: true },
+            { name: 'Kuala Lumpur', country: 'Malaysia', icon: 'location_city', popular: true },
+            { name: 'Penang', country: 'Malaysia', icon: 'location_city', popular: true },
+            { name: 'Jakarta', country: 'Indonesia', icon: 'location_city', popular: true },
+            { name: 'Bali', country: 'Indonesia', icon: 'location_city', popular: true },
+            { name: 'Manila', country: 'Philippines', icon: 'location_city', popular: true },
+            { name: 'Cebu', country: 'Philippines', icon: 'location_city', popular: true },
+            { name: 'Auckland', country: 'New Zealand', icon: 'location_city', popular: true },
+            { name: 'Wellington', country: 'New Zealand', icon: 'location_city', popular: true },
+            { name: 'Melbourne', country: 'Australia', icon: 'location_city', popular: true },
+            { name: 'Brisbane', country: 'Australia', icon: 'location_city', popular: true },
+            { name: 'Perth', country: 'Australia', icon: 'location_city', popular: true },
+            { name: 'Athens', country: 'Greece', icon: 'location_city', popular: true },
+            { name: 'Santorini', country: 'Greece', icon: 'location_city', popular: true },
+            { name: 'Dubrovnik', country: 'Croatia', icon: 'location_city', popular: true },
+            { name: 'Split', country: 'Croatia', icon: 'location_city', popular: true },
+            { name: 'Prague', country: 'Czech Republic', icon: 'location_city', popular: true },
+            { name: 'Budapest', country: 'Hungary', icon: 'location_city', popular: true },
+            { name: 'Warsaw', country: 'Poland', icon: 'location_city', popular: true },
+            { name: 'Krakow', country: 'Poland', icon: 'location_city', popular: true },
+            { name: 'Vienna', country: 'Austria', icon: 'location_city', popular: true },
+            { name: 'Munich', country: 'Germany', icon: 'location_city', popular: true },
+            { name: 'Berlin', country: 'Germany', icon: 'location_city', popular: true },
+            { name: 'Hamburg', country: 'Germany', icon: 'location_city', popular: true },
+            { name: 'Cologne', country: 'Germany', icon: 'location_city', popular: true },
+            { name: 'Frankfurt', country: 'Germany', icon: 'location_city', popular: true },
+            { name: 'Zurich', country: 'Switzerland', icon: 'location_city', popular: true },
+            { name: 'Geneva', country: 'Switzerland', icon: 'location_city', popular: true },
+            { name: 'Brussels', country: 'Belgium', icon: 'location_city', popular: true },
+            { name: 'Bruges', country: 'Belgium', icon: 'location_city', popular: true },
+            { name: 'Lisbon', country: 'Portugal', icon: 'location_city', popular: true },
+            { name: 'Porto', country: 'Portugal', icon: 'location_city', popular: true },
+            { name: 'Madrid', country: 'Spain', icon: 'location_city', popular: true },
+            { name: 'Valencia', country: 'Spain', icon: 'location_city', popular: true },
+            { name: 'Seville', country: 'Spain', icon: 'location_city', popular: true },
+            { name: 'Granada', country: 'Spain', icon: 'location_city', popular: true },
+            { name: 'Milan', country: 'Italy', icon: 'location_city', popular: true },
+            { name: 'Florence', country: 'Italy', icon: 'location_city', popular: true },
+            { name: 'Venice', country: 'Italy', icon: 'location_city', popular: true },
+            { name: 'Naples', country: 'Italy', icon: 'location_city', popular: true },
+            { name: 'Turin', country: 'Italy', icon: 'location_city', popular: true },
+            { name: 'Bologna', country: 'Italy', icon: 'location_city', popular: true },
+            { name: 'Nice', country: 'France', icon: 'location_city', popular: true },
+            { name: 'Lyon', country: 'France', icon: 'location_city', popular: true },
+            { name: 'Marseille', country: 'France', icon: 'location_city', popular: true },
+            { name: 'Bordeaux', country: 'France', icon: 'location_city', popular: true },
+            { name: 'Edinburgh', country: 'UK', icon: 'location_city', popular: true },
+            { name: 'Manchester', country: 'UK', icon: 'location_city', popular: true },
+            { name: 'Liverpool', country: 'UK', icon: 'location_city', popular: true },
+            { name: 'Dublin', country: 'Ireland', icon: 'location_city', popular: true },
+            { name: 'Belfast', country: 'Northern Ireland', icon: 'location_city', popular: true },
+            { name: 'Reykjavik', country: 'Iceland', icon: 'location_city', popular: true },
+            { name: 'Helsinki', country: 'Finland', icon: 'location_city', popular: true },
+            { name: 'Stockholm', country: 'Sweden', icon: 'location_city', popular: true },
+            { name: 'Oslo', country: 'Norway', icon: 'location_city', popular: true },
+            { name: 'Copenhagen', country: 'Denmark', icon: 'location_city', popular: true },
+            { name: 'Tallinn', country: 'Estonia', icon: 'location_city', popular: true },
+            { name: 'Riga', country: 'Latvia', icon: 'location_city', popular: true },
+            { name: 'Vilnius', country: 'Lithuania', icon: 'location_city', popular: true }
+
         ];
 
         let currentFocus = -1;
 
-        // Show suggestions on focus
-        cityInput.addEventListener('focus', () => {
-            showSuggestions(popularCities);
-        });
-
-        // Filter suggestions on input
+        // Filter suggestions on input - only show when user is typing
         cityInput.addEventListener('input', (e) => {
             const value = e.target.value.toLowerCase();
             if (value.length === 0) {
-                showSuggestions(popularCities);
+                hideSuggestions();
             } else {
                 const filtered = popularCities.filter(city =>
                     city.name.toLowerCase().startsWith(value) ||
@@ -1645,7 +1742,7 @@ class FormManager {
 
                     // Format the message with form data and transfer instruction
                     const formDataString = JSON.stringify(this.formData, null, 2);
-                    const message = `Bana başka soru sorma, planımı güzelce oluştur. Tüm sub-agent'ları çağır (hotels_agent, maps_agent, events_agent) ve bilgileri topla. SON AŞAMADA planner_summary_agent'a transfer et ve onun ürettiği KOMPLE JSON ÇIKTISINI DÖNDÜR. JSON çıktısında hotel_information ve day_plans olmalı.\n\nÖNEMLİ: planner_summary_agent'ın döndürdüğü JSON'u AYNEN VER,\n\n${formDataString}`;
+                    const message = `Here, I share you my trip preferences, I want you to create me a tour according to the information below and DO NOT ASK ANY OTHER QUESTIONS. Just provide me with my trip. Be sure to call every sub-agent possible (e.g., hotels_agent, maps_agent, events_agent, text_search_agent, place_details_agent, etc.)) about getting information. Gather everything as best as you can. Then transfer to the planner_summary_agent. Then ONLY RETURN ME THE JSON THAT IS GENERATED AFTER plan_summary_agent IS CALLED. DO NOT SAY ANYTHING ELSE. MAKE SURE THE JSON IS VALID. \n\nHere is my trip information:\n\n${formDataString}`;
 
                     console.log(`📤 [Attempt ${attempt}/${MAX_RETRIES}] Sending message to Google ADK...`);
                     console.log('📝 Message being sent:', message.substring(0, 500) + '...');

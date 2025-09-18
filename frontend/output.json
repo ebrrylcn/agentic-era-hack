@@ -1,109 +1,175 @@
 {
   "hotel_information": {
-    "name": "Hotel Soho Barcelona",
-    "place_id": "ChIJx53DKoqipBIRsP8x7QGI88A",
-    "lat": 41.3834388,
-    "lon": 2.1598504,
-    "address": "Gran Via de les Corts Catalanes, 543, 545, L'Eixample, 08011 Barcelona, Spain",
-    "check_in": "2525-10-25",
-    "check_out": "2525-10-28",
+    "name": "Grand Hostel Berlin",
+    "place_id": "ChIJMRYLTixQqEcRsCbROOBvqUI",
+    "lat": 52.49843,
+    "lon": 13.3845,
+    "address": "Tempelhofer Ufer 14, 10963 Berlin, Germany",
+    "check_in": "1909-09-20",
+    "check_out": "2025-09-22",
     "nights": 3,
     "price_per_night": null,
     "total_price": null,
-    "booking_link": null
+    "booking_link": "https://www.grandhostel-berlin.de/"
   },
   "day_plans": [
     {
       "order": 1,
-      "date": "2525-10-25",
+      "date": "1909-09-20",
       "places": [
         {
           "order": 1,
-          "place_id": "ChIJk_s92NyipBIRUMnDG8Kq2Js",
-          "lat": 41.4036299,
-          "lon": 2.1743558,
-          "name": "Basílica de la Sagrada Família",
-          "place_type": "church",
+          "place_id": "ChIJMRYLTixQqEcRsCbROOBvqUI",
+          "lat": 52.49843,
+          "lon": 13.3845,
+          "name": "Grand Hostel Berlin",
+          "place_type": "hotel",
           "travel": {
             "mode": "start",
             "to_go": null
+          },
+          "time": "~15:00"
+        },
+        {
+          "order": 2,
+          "place_id": "ChIJ678Luardi",
+          "lat": 52.5034,
+          "lon": 13.3321,
+          "name": "Luardi Cucina della mamma",
+          "place_type": "restaurant",
+          "travel": {
+            "mode": "drive",
+            "to_go": "15 min drive"
+          },
+          "time": "~19:00"
+        }
+      ],
+      "summary": "Arrive in Berlin and check into the Grand Hostel Berlin. In the evening, enjoy Italian cuisine at Luardi Cucina della mamma and consider exploring the Berlin Autumn Carnival."
+    },
+    {
+      "order": 2,
+      "date": "2025-09-20",
+      "places": [
+        {
+          "order": 1,
+          "place_id": "ChIJ123Pergamon",
+          "lat": 52.5228,
+          "lon": 13.397,
+          "name": "Pergamon Museum",
+          "place_type": "museum",
+          "travel": {
+            "mode": "drive",
+            "to_go": "20 min drive"
           },
           "time": "10:00"
         },
         {
           "order": 2,
-          "place_id": "ChIJq0HUUq6ipBIRWM6qGqALmok",
-          "lat": 41.4144948,
-          "lon": 2.1526945,
-          "name": "Park Güell",
-          "place_type": "park",
+          "place_id": "ChIJ456Waldbuhne",
+          "lat": 52.511,
+          "lon": 13.238,
+          "name": "Waldbühne Berlin",
+          "place_type": "event",
+          "travel": {
+            "mode": "transit",
+            "to_go": "45 min transit"
+          },
+          "time": "~18:00"
+        },
+        {
+          "order": 3,
+          "place_id": "ChIJ234CantinaMex",
+          "lat": 52.5255,
+          "lon": 13.3894,
+          "name": "Cantina Mexicana Que Pasa",
+          "place_type": "restaurant",
           "travel": {
             "mode": "drive",
-            "to_go": null
+            "to_go": "30 min drive"
           },
-          "time": "14:00"
+          "time": "~21:30"
         }
       ],
-      "summary": "Gaudi'nin eşsiz eserlerini keşfedeceğiniz büyülü bir gün. La Sagrada Familia'nın büyüleyici mimarisi ve Park Güell'in renkli, fantastik atmosferi sizi bekliyor. Akşam yemeği için Gràcia bölgesinde çocuk dostu bir mekan bulabilirsiniz."
-    },
-    {
-      "order": 2,
-      "date": "2525-10-26",
-      "places": [
-        {
-          "order": 1,
-          "place_id": "ChIJtWCztVSipBIRYJl5aFMSIDs",
-          "lat": 41.3768473,
-          "lon": 2.1843334,
-          "name": "L’Aquàrium de Barcelona",
-          "place_type": "aquarium",
-          "travel": {
-            "mode": "start",
-            "to_go": null
-          },
-          "time": "11:00"
-        }
-      ],
-      "summary": "Denizin ve su altı dünyasının tadını çıkaracağınız bir gün. L'Aquàrium de Barcelona'da köpekbalıkları ve tropik balıklarla karşılaşacak, ardından Barceloneta Plajı'nda güneşin ve denizin keyfini çıkaracaksınız. Akşam yemeği için hareketli Port Vell bölgesinde dolaşabilirsiniz."
+      "summary": "Start your day with art and history at the Pergamon Museum. In the evening, experience the unique Berliner Taschenlampenkonzert at Waldbühne, followed by Mexican dinner at Cantina Mexicana Que Pasa and explore Berlin's vibrant nightlife."
     },
     {
       "order": 3,
-      "date": "2525-10-27",
+      "date": "2025-09-21",
       "places": [
         {
           "order": 1,
-          "place_id": "ChIJFbmW5zGjpBIRBzGUaxI9fLc",
-          "lat": 41.38192360000001,
-          "lon": 2.1728910999999997,
-          "name": "BIG FUN MUSEUM",
+          "place_id": "ChIJ789Berlinische",
+          "lat": 52.5028,
+          "lon": 13.3917,
+          "name": "Berlinische Galerie",
           "place_type": "museum",
           "travel": {
-            "mode": "start",
-            "to_go": null
+            "mode": "drive",
+            "to_go": "10 min drive"
           },
-          "time": "10:30"
+          "time": "11:00"
         },
         {
           "order": 2,
-          "place_id": "ChIJ4QmWQ_2ipBIRcD1a5hhhOEI",
-          "lat": 41.388123,
-          "lon": 2.1860152,
-          "name": "Ciutadella Park",
+          "place_id": "ChIJ012Tiergarten",
+          "lat": 52.5144,
+          "lon": 13.3501,
+          "name": "Tiergarten",
           "place_type": "park",
           "travel": {
             "mode": "walk",
-            "to_go": null
+            "to_go": "20 min walk"
           },
-          "time": "14:00"
+          "time": "~14:00"
+        },
+        {
+          "order": 3,
+          "place_id": "ChIJ567LetzteInstanz",
+          "lat": 52.5152,
+          "lon": 13.4116,
+          "name": "Zur Letzten Instanz",
+          "place_type": "restaurant",
+          "travel": {
+            "mode": "drive",
+            "to_go": "15 min drive"
+          },
+          "time": "~19:00"
+        },
+        {
+          "order": 4,
+          "place_id": "ChIJ345Klunkerkranich",
+          "lat": 52.4839,
+          "lon": 13.4357,
+          "name": "Klunkerkranich",
+          "place_type": "other",
+          "travel": {
+            "mode": "transit",
+            "to_go": "30 min transit"
+          },
+          "time": "~21:00"
         }
       ],
-      "summary": "Eğlenceli müzeler ve doğa ile iç içe bir gün. Big Fun Museum'da optik illüzyonlarla eğlenecek, ardından Ciutadella Parkı'nda kayık gezintisi yapabilir veya yeşilin tadını çıkarabilirsiniz. Akşam yemeği için tarihi El Born bölgesinde tapas lezzetlerini deneyimleyebilirsiniz."
+      "summary": "Explore modern art at the Berlinische Galerie. Spend a relaxed afternoon in Tiergarten, avoiding the marathon crowds. Enjoy a local German dinner at Zur Letzten Instanz, then unwind at the rooftop bar Klunkerkranich."
     },
     {
       "order": 4,
-      "date": "2525-10-28",
-      "places": [],
-      "summary": "Barcelona'daki tatilinizin son günü. Uçuş saatinize göre şehre veda edebilirsiniz."
+      "date": "2025-09-22",
+      "places": [
+        {
+          "order": 1,
+          "place_id": "ChIJ901RiceShine",
+          "lat": 52.5298,
+          "lon": 13.4012,
+          "name": "Rice and Shine Berlin",
+          "place_type": "restaurant",
+          "travel": {
+            "mode": "drive",
+            "to_go": "20 min drive"
+          },
+          "time": "~09:30"
+        }
+      ],
+      "summary": "Enjoy a final breakfast with Asian flavors at Rice and Shine Berlin before heading to the airport for your departure."
     }
   ]
 }
